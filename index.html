@@ -22,12 +22,9 @@
   }
   .app { max-width: 720px; margin: 0 auto; padding: 56px 28px 60px; }
   @media (max-width: 560px) { .app { padding: 36px 16px 48px; } }
-
   .title { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 8px; color: #fff; }
   .subtitle { font-size: 14px; color: var(--text-secondary); margin: 0 0 32px; }
-
   .topic-list { display: flex; flex-direction: column; gap: 10px; }
-
   .topic-card {
     display: flex; align-items: center; gap: 14px;
     background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
@@ -35,26 +32,21 @@
     transition: background .15s, border-color .15s;
   }
   .topic-card:hover { background: var(--surface-2-hover); border-color: var(--accent); }
-
   .topic-icon {
     flex: 0 0 36px; width: 36px; height: 36px; border-radius: 10px;
     background: rgba(138,180,248,0.12); color: var(--accent);
     display: flex; align-items: center; justify-content: center;
   }
   .topic-icon svg { width: 18px; height: 18px; }
-
   .topic-main { flex: 1 1 auto; min-width: 0; }
   .topic-name { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
   .topic-desc { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
-
   .topic-arrow { flex: 0 0 auto; color: var(--text-secondary); }
   .topic-arrow svg { width: 16px; height: 16px; }
-
-  /* Template for a future topic card you haven't added a page for yet.
-     Duplicate a .topic-card block above and point its href at the new file
-     once you commit it — this one is just a visual placeholder. */
+  /* Cards rendered for topics with ready:false in data/topics.js —
+     disabled, no link, just a preview of what's coming. */
   .topic-card.is-placeholder {
-    opacity: .45; pointer-events: none; cursor: default;
+    opacity: .45; cursor: default;
   }
 </style>
 </head>
@@ -62,25 +54,66 @@
   <div class="app">
     <h1 class="title">DSA Practice</h1>
     <p class="subtitle">Pick a topic to start solving.</p>
-
-    <div class="topic-list">
-      <a class="topic-card" href="Arrays%26Strings.html">
-        <span class="topic-icon">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </span>
-        <span class="topic-main">
-          <p class="topic-name">Arrays &amp; Strings</p>
-          <p class="topic-desc">Two pointers, sliding window, hashing</p>
-        </span>
-        <span class="topic-arrow">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-      </a>
-
-      <!-- Add the next topic the same way once its .html file is committed, e.g.:
-      <a class="topic-card" href="LinkedLists.html"> ... </a>
-      -->
+    <div class="topic-list" id="topicList">
+      <p class="subtitle">Loading topics…</p>
     </div>
   </div>
+
+  <script src="data/topics.js"></script>
+  <script>
+  (function () {
+    "use strict";
+
+    /* Icon set referenced by `icon` in data/topics.js.
+       Add a key here, then use its name in the data file —
+       no other code needs to change. */
+    var ICONS = {
+      list: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+      link: '<svg viewBox="0 0 24 24" fill="none"><path d="M10 14a4 4 0 005.66 0l2.83-2.83a4 4 0 00-5.66-5.66L11 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 10a4 4 0 00-5.66 0L5.5 12.83a4 4 0 005.66 5.66L13 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      tree: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><path d="M12 7.2V11M9.3 13.2L11 11M14.7 13.2L13 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    };
+    var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    var topics = (window.TOPICS || []);
+    var listEl = document.getElementById("topicList");
+
+    if (!topics.length) {
+      listEl.innerHTML = '<p class="subtitle">No topics yet — add one in data/topics.js</p>';
+      return;
+    }
+
+    var html = "";
+    topics.forEach(function (t) {
+      var icon = ICONS[t.icon] || ICONS.list;
+      if (t.ready) {
+        html +=
+          '<a class="topic-card" href="template.html?topic=' + encodeURIComponent(t.id) + '">' +
+            '<span class="topic-icon">' + icon + '</span>' +
+            '<span class="topic-main">' +
+              '<p class="topic-name">' + esc(t.name) + '</p>' +
+              '<p class="topic-desc">' + esc(t.desc) + '</p>' +
+            '</span>' +
+            '<span class="topic-arrow">' + ARROW_SVG + '</span>' +
+          '</a>';
+      } else {
+        html +=
+          '<span class="topic-card is-placeholder">' +
+            '<span class="topic-icon">' + icon + '</span>' +
+            '<span class="topic-main">' +
+              '<p class="topic-name">' + esc(t.name) + '</p>' +
+              '<p class="topic-desc">' + esc(t.desc) + ' · coming soon</p>' +
+            '</span>' +
+          '</span>';
+      }
+    });
+    listEl.innerHTML = html;
+  })();
+  </script>
 </body>
 </html>

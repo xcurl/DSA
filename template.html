@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DSA Progress Roadmap</title>
+<title>DSA Practice</title>
 <style>
   :root {
     --bg: #000000;
@@ -25,26 +25,50 @@
     margin: 0; background: var(--bg); color: var(--text);
     font-family: var(--sans); -webkit-font-smoothing: antialiased;
   }
-  .app { max-width: 920px; margin: 0 auto; padding: 40px 28px 60px; }
-  @media (max-width: 560px) { .app { padding: 28px 16px 48px; } }
+  .app { max-width: 920px; margin: 0 auto; padding: 32px 28px 60px; }
+  @media (max-width: 560px) { .app { padding: 24px 16px 48px; } }
 
-  .title { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 28px; color: #fff; }
-  @media (max-width: 560px) { .title { font-size: 26px; margin-bottom: 20px; } }
+  .topbar { margin-bottom: 18px; }
+  .back-link {
+    font-size: 13px; color: var(--text-secondary); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .back-link:hover { color: var(--text); }
+  .back-link svg { width: 13px; height: 13px; }
 
-  /* ---- controls ---- */
-  .controls { margin-bottom: 8px; }
-  .control-row {
-    display: grid; grid-template-columns: 130px 1fr; align-items: center;
-    column-gap: 16px; margin-bottom: 14px;
+  .title {
+    font-size: 30px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 24px; color: #fff;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px;
   }
-  @media (max-width: 560px) {
-    .control-row { grid-template-columns: 1fr; row-gap: 8px; margin-bottom: 16px; }
+  @media (max-width: 560px) { .title { font-size: 24px; margin-bottom: 18px; } }
+
+  /* ---- progress: now lives at the top ---- */
+  .progress-top { margin-bottom: 26px; }
+  .progress-top-row {
+    display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px;
   }
-  .control-label { font-size: 14px; color: var(--text-secondary); }
+  .progress-label { font-size: 13px; color: var(--text-secondary); }
+  .progress-value { font-family: var(--mono); font-size: 14px; color: var(--text); letter-spacing: .2px; }
+  .progress-bar-mini { width: 100%; height: 5px; border-radius: 999px; background: var(--border); overflow: hidden; }
+  .progress-bar-mini-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s ease; }
+
+  /* ---- controls: Day + Search side by side ---- */
+  .controls-bar {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 8px;
+  }
+  .control-group { display: flex; align-items: center; gap: 10px; }
+  .control-group.day-group { flex: 0 0 auto; }
+  .control-group.search-group { flex: 1 1 auto; min-width: 0; }
+  .control-label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+  @media (max-width: 600px) {
+    .controls-bar { flex-wrap: wrap; row-gap: 10px; }
+    .control-group.day-group, .control-group.search-group { flex: 1 1 100%; }
+  }
 
   .stepper {
     display: flex; align-items: center; background: var(--surface-2);
     border: 1px solid var(--border); border-radius: 999px; height: 46px; overflow: hidden;
+    width: 160px; flex: 0 0 160px;
   }
   .stepper-arrow {
     flex: 0 0 46px; height: 46px; display: flex; align-items: center; justify-content: center;
@@ -53,7 +77,7 @@
   .stepper-arrow svg { width: 16px; height: 16px; }
   .stepper-arrow:disabled { opacity: .3; cursor: default; }
   .stepper-arrow:hover:not(:disabled) { background: var(--surface-2-hover); }
-  .stepper-value { flex: 1; text-align: center; font-size: 14px; font-weight: 600; font-family: var(--mono); }
+  .stepper-value { flex: 1; text-align: center; font-size: 14px; font-weight: 600; font-family: var(--mono); white-space: nowrap; }
 
   .search-input {
     width: 100%; height: 46px; border-radius: 999px; border: 1px solid var(--border);
@@ -64,7 +88,7 @@
   .search-input:focus { border-color: var(--accent); }
 
   /* ---- table ---- */
-  .table-wrap { border-top: 1px solid var(--border); margin-top: 28px; }
+  .table-wrap { border-top: 1px solid var(--border); margin-top: 24px; }
 
   .table-header {
     display: grid; grid-template-columns: 40px 1fr 220px 100px 36px; gap: 0 20px;
@@ -147,13 +171,35 @@
     padding: 6px 12px; background: #161b22; border-bottom: 1px solid #30363d;
     flex-shrink: 0;
   }
-  .code-editor-lang {
-    font-size: 11px; font-weight: 600; color: #8ab4f8; font-family: var(--mono);
-    display: flex; align-items: center; gap: 6px;
+  .code-editor-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .approach-label-input {
+    flex: 1 1 auto; min-width: 0; background: transparent; border: none; outline: none;
+    color: #8ab4f8; font-size: 12px; font-weight: 600; font-family: var(--mono);
+    padding: 4px 6px; border-radius: 6px; margin-right: 8px;
   }
-  .code-editor-lang-dot {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #f0883e; flex-shrink: 0;
+  .approach-label-input:focus { background: rgba(255,255,255,.06); color: #e6edf3; }
+  .approach-label-input::placeholder { color: #6e7681; }
+  .approach-remove-btn {
+    width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent;
+    color: var(--text-secondary); cursor: pointer; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; padding: 0;
   }
+  .approach-remove-btn svg { width: 13px; height: 13px; pointer-events: none; }
+  .approach-remove-btn:hover { color: var(--danger); background: rgba(240,68,56,.12); }
+
+  /* Multiple approaches per problem */
+  .approaches-list { display: flex; flex-direction: column; gap: 12px; }
+  .approaches-list:not(:empty) { margin-bottom: 12px; }
+  .add-approach-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: rgba(138,180,248,.08); border: 1px dashed rgba(138,180,248,.35);
+    border-radius: 8px; padding: 7px 14px; cursor: pointer; font-family: var(--sans);
+    transition: background .15s, border-color .15s;
+  }
+  .add-approach-btn svg { width: 13px; height: 13px; }
+  .add-approach-btn:hover { background: rgba(138,180,248,.14); border-color: rgba(138,180,248,.55); }
+
   .code-copy-btn {
     display: flex; align-items: center; gap: 5px;
     font-size: 11px; font-weight: 600; color: var(--text-secondary); background: transparent;
@@ -211,7 +257,7 @@
 
   /* ---- Mobile ---- */
   @media (max-width: 680px) {
-    .table-wrap { border-top: none; margin-top: 20px; }
+    .table-wrap { border-top: none; margin-top: 18px; }
     .row {
       display: block; border: 1px solid var(--border); border-radius: 14px;
       margin-bottom: 8px; padding: 12px 14px;
@@ -225,17 +271,11 @@
     .notes-panel { padding: 10px 0 0; }
   }
 
-  .loading, .empty-state {
+  .loading, .empty-state, .fatal-error {
     text-align: center; padding: 48px 0; color: var(--text-secondary); font-size: 14px;
   }
-
-  /* ---- progress ---- */
-  .progress-section { text-align: center; padding: 32px 0 4px; }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 24px; }
-  .progress-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
-  .progress-value { font-family: var(--mono); font-size: 18px; color: var(--text); letter-spacing: .3px; }
-  .progress-bar-mini { width: 180px; height: 3px; border-radius: 999px; background: var(--border); margin: 16px auto 0; overflow: hidden; }
-  .progress-bar-mini-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s ease; }
+  .fatal-error a { color: var(--accent); text-decoration: none; }
+  .fatal-error a:hover { text-decoration: underline; }
 
   /* ---- modal ---- */
   .modal-overlay {
@@ -268,7 +308,7 @@
   /* DB status badge */
   .db-badge {
     display: inline-flex; align-items: center; gap: 5px; font-size: 11px;
-    color: var(--text-secondary); margin-left: 12px; vertical-align: middle;
+    color: var(--text-secondary); vertical-align: middle; font-weight: 400;
   }
   .db-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; }
   .db-dot.error { background: var(--danger); }
@@ -277,29 +317,43 @@
 <body>
 
 <div class="app">
-  <h1 class="title">
-    DSA Progress Roadmap
+  <div class="topbar">
+    <a class="back-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All topics
+    </a>
+  </div>
+
+  <h1 class="title" id="pageTitle">
+    <span id="pageTitleText">Loading…</span>
     <span class="db-badge" id="dbBadge">
       <span class="db-dot" id="dbDot"></span>
       <span id="dbLabel">IndexedDB</span>
     </span>
   </h1>
 
-  <div class="controls">
-    <div class="control-row">
-      <div class="control-label">Schedule Day</div>
+  <div class="progress-top">
+    <div class="progress-top-row">
+      <span class="progress-label">Progress</span>
+      <span class="progress-value" id="progressValue">—</span>
+    </div>
+    <div class="progress-bar-mini"><div class="progress-bar-mini-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="controls-bar">
+    <div class="control-group day-group">
+      <span class="control-label">Day</span>
       <div class="stepper">
         <button class="stepper-arrow" id="dayPrev" type="button" aria-label="Previous day">
           <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <div class="stepper-value" id="dayValue">Day 1</div>
+        <div class="stepper-value" id="dayValue">—</div>
         <button class="stepper-arrow" id="dayNext" type="button" aria-label="Next day">
           <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
     </div>
-    <div class="control-row">
-      <div class="control-label">Search Title</div>
+    <div class="control-group search-group">
       <input class="search-input" id="searchInput" type="text" placeholder="Search this day's problems…" />
     </div>
   </div>
@@ -309,16 +363,8 @@
       <div>Status</div><div>Title</div><div>Approach</div><div>Targets</div><div></div>
     </div>
     <div class="list" id="list">
-      <div class="loading">Loading your saved progress…</div>
+      <div class="loading">Loading topic…</div>
     </div>
-  </div>
-
-  <div class="progress-section">
-    <hr class="divider" />
-    <div class="progress-label">Progress</div>
-    <div class="progress-value" id="progressValue">—</div>
-    <div class="progress-bar-mini"><div class="progress-bar-mini-fill" id="progressFill"></div></div>
-    <hr class="divider" style="margin-top:24px;margin-bottom:0;" />
   </div>
 </div>
 
@@ -340,69 +386,82 @@
   "use strict";
 
   /* ======================================================
-   * DATA
+   * 1. WHICH TOPIC AM I?
+   * This is the only thing that differs between pages —
+   * everything below is generic template logic.
    * ====================================================== */
-  var PROBLEMS_RAW = {
-    "Day 1": [
-      "Two Sum", "Best Time to Buy/Sell Stock", "Contains Duplicate", "Move Zeroes", "Remove Duplicates",
-      "Remove Element", "Majority Element", "Merge Sorted", "Squares of Sorted", "Find Pivot Index",
-      "Missing Number", "Intersection II", "Max Average Subarray", "Can Place Flowers", "Single Number"
-    ],
-    "Day 2": [
-      "3Sum", "Container with Water", "Product Except Self", "Max Subarray", "Merge Intervals",
-      "Search Rotated", "Find Min Rotated", "Sort Colors", "Subarray Sum K", "Rotate Array",
-      "Next Permutation", "Spiral Matrix", "Set Matrix Zeroes", "Kth Largest", "Combination Sum",
-      "Trapping Rain Water", "First Missing Positive", "Sliding Window Max", "Largest Histogram", "Median Sorted",
-      "Reverse Pairs", "Insert Interval", "Count Smaller", "Split Array", "Max Value Equation"
-    ],
-    "Day 3": [
-      "Valid Anagram", "Valid Palindrome", "Reverse String", "First Unique Char", "Longest Common Prefix",
-      "strStr", "Valid Parentheses", "Isomorphic Strings", "Word Pattern", "Add Strings",
-      "Reverse Vowels", "Ransom Note", "Length Last Word", "Array Equivalence", "Roman to Integer"
-    ],
-    "Day 4": [
-      "Longest Substring No Repeat", "Longest Palindrome Substring", "atoi", "Group Anagrams", "Longest Repeating Replacement",
-      "Valid Sudoku", "Decode String", "Find All Anagrams", "Min Add Parentheses", "Palindromic Substrings",
-      "String Compression", "Min Deletions", "Generate Parentheses", "Longest Palindrome 2-Letter", "Letter Combinations",
-      "Minimum Window Substring", "Edit Distance", "Longest Valid Parentheses", "Wildcard Matching", "Regular Expression",
-      "Text Justification", "Word Ladder", "Substring Concatenation", "Palindrome Pairs", "Distinct Subsequences"
-    ]
-  };
-
-  var STRATEGIES = {
-    "Day 1": "Hash Map / Two Pointers (Basic)",
-    "Day 2": "Sliding Window / Binary Search / DP",
-    "Day 3": "String Manipulation / Frequency Map",
-    "Day 4": "Advanced Window / Hard DP / Regex"
-  };
-
-  var COMPANIES = ["FAANG", "Stripe", "Uber", "Airbnb", "Microsoft"];
-  var DAYS = Object.keys(PROBLEMS_RAW);
-
-  var allProblems = [];
-  DAYS.forEach(function (day) {
-    PROBLEMS_RAW[day].forEach(function (title, i) {
-      allProblems.push({
-        id: day + "-" + i,
-        day: day,
-        title: title,
-        approach: STRATEGIES[day],
-        target: COMPANIES[i % COMPANIES.length]
-      });
-    });
-  });
+  var topicId = new URLSearchParams(window.location.search).get("topic") || "";
 
   /* ======================================================
    * STATE
    * ====================================================== */
   var state = {
-    day: DAYS[0],
+    day: "",
     search: "",
     completed: new Set(),
     notes: {},
     pending: null
   };
+  var DAYS = [];
   var dayIndex = 0;
+  var allProblems = [];
+  var db = null;
+
+  /* IndexedDB keys are namespaced per topic so multiple topic
+     pages can share the same database without clobbering
+     each other's progress. */
+  function kCompleted() { return topicId + ":completed"; }
+  function kNotes()     { return topicId + ":notes"; }
+
+  /* ======================================================
+   * 2. LOAD THE TOPIC'S DATA FILE (data/<topic>.js)
+   * Plain <script src> — not fetch() — so this also works
+   * when the page is opened directly from disk (file://),
+   * with no local server and no CORS issues.
+   * ====================================================== */
+  function loadTopicScript(id) {
+    return new Promise(function (resolve, reject) {
+      if (!id) { reject(new Error("No topic was specified in the URL.")); return; }
+      var s = document.createElement("script");
+      s.src = "data/" + id + ".js";
+      s.onload = function () {
+        if (window.TOPIC_DATA) resolve(window.TOPIC_DATA);
+        else reject(new Error("data/" + id + ".js loaded but did not set TOPIC_DATA."));
+      };
+      s.onerror = function () {
+        reject(new Error("Couldn't find data/" + id + ".js — check the topic id matches the data file name."));
+      };
+      document.head.appendChild(s);
+    });
+  }
+
+  function buildProblems(data) {
+    DAYS = [];
+    allProblems = [];
+    (data.days || []).forEach(function (d) {
+      DAYS.push(d.name);
+      (d.problems || []).forEach(function (p, i) {
+        allProblems.push({
+          id: d.name + "-" + i,
+          day: d.name,
+          title: p.title,
+          approach: p.approach,
+          target: p.target
+        });
+      });
+    });
+    state.day = DAYS[0] || "";
+    dayIndex = 0;
+  }
+
+  function showFatalError(message) {
+    document.getElementById("pageTitleText").textContent = "Couldn't load this page";
+    document.getElementById("dbBadge").style.display = "none";
+    document.querySelector(".progress-top").style.display = "none";
+    document.querySelector(".controls-bar").style.display = "none";
+    document.getElementById("list").innerHTML =
+      '<div class="fatal-error">' + esc(message) + '<br><br><a href="index.html">&larr; Back to all topics</a></div>';
+  }
 
   /* ======================================================
    * IndexedDB setup
@@ -410,8 +469,6 @@
   var DB_NAME    = "dsa-roadmap-db";
   var DB_VERSION = 1;
   var STORE_KV   = "keyval";   // simple key-value store
-
-  var db = null;
 
   function openDB() {
     return new Promise(function (resolve, reject) {
@@ -450,17 +507,17 @@
    * ====================================================== */
   function loadAll() {
     return Promise.all([
-      dbGet("completed").then(function (val) {
+      dbGet(kCompleted()).then(function (val) {
         state.completed = new Set(Array.isArray(val) ? val : []);
       }),
-      dbGet("notes").then(function (val) {
+      dbGet(kNotes()).then(function (val) {
         state.notes = (val && typeof val === "object") ? val : {};
       })
     ]);
   }
 
   function saveCompleted() {
-    dbSet("completed", Array.from(state.completed)).catch(function () {
+    dbSet(kCompleted(), Array.from(state.completed)).catch(function () {
       showToast("Couldn't save — storage may be unavailable.");
     });
   }
@@ -471,7 +528,7 @@
     } else {
       delete state.notes[problemId];
     }
-    dbSet("notes", state.notes).catch(function () {
+    dbSet(kNotes(), state.notes).catch(function () {
       showToast("Couldn't save note.");
     });
   }
@@ -506,7 +563,6 @@
     var len = code.length;
 
     function peek(n) { return code.slice(i, i + n); }
-    function take(n) { var s = code.slice(i, i + n); i += n; return s; }
     function esc2(s) {
       return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
     }
@@ -626,6 +682,11 @@
     });
   }
 
+  function setDbStatus(ok) {
+    document.getElementById("dbDot").className = ok ? "db-dot" : "db-dot error";
+    document.getElementById("dbLabel").textContent = ok ? "IndexedDB" : "DB Error";
+  }
+
   /* ======================================================
    * SVG constants
    * ====================================================== */
@@ -645,7 +706,7 @@
    * Day stepper
    * ====================================================== */
   function updateDayControls() {
-    document.getElementById("dayValue").textContent = state.day;
+    document.getElementById("dayValue").textContent = state.day || "—";
     document.getElementById("dayPrev").disabled = dayIndex <= 0;
     document.getElementById("dayNext").disabled = dayIndex >= DAYS.length - 1;
   }
@@ -672,6 +733,210 @@
   }
 
   /* ======================================================
+   * Multiple Java approaches per problem
+   * ------------------------------------------------------
+   * Each problem can have any number of named code blocks
+   * ("Approach 1", "Approach 2", ...). They're stored as an
+   * array under notes[problemId + ":approaches"].
+   * ====================================================== */
+
+  /* Returns the live array of approaches for a problem (mutating
+     it mutates state.notes directly, since it's the same reference).
+     Transparently migrates a problem that still has the old single
+     ":code" string from before this feature existed. */
+  function loadApproachesFor(problemId) {
+    var key = problemId + ":approaches";
+    var existing = state.notes[key];
+    if (Array.isArray(existing)) return existing;
+
+    var legacyKey = problemId + ":code";
+    var legacyCode = state.notes[legacyKey];
+    if (legacyCode && String(legacyCode).trim()) {
+      var migrated = [{ id: "a1", label: "Approach 1", code: legacyCode }];
+      state.notes[key] = migrated;
+      delete state.notes[legacyKey];
+      dbSet(kNotes(), state.notes).catch(function () {});
+      return migrated;
+    }
+    return [];
+  }
+
+  /* Builds one Java code block (label input + copy + remove + editor)
+     for a single approach object { id, label, code }. */
+  function createApproachBlock(approach, onEdit, onRemove) {
+    var wrap = document.createElement("div");
+    wrap.className = "code-editor-wrap";
+
+    var header = document.createElement("div");
+    header.className = "code-editor-header";
+
+    var labelInput = document.createElement("input");
+    labelInput.className = "approach-label-input";
+    labelInput.type = "text";
+    labelInput.value = approach.label || "Approach";
+    labelInput.placeholder = "Approach name";
+    labelInput.setAttribute("aria-label", "Approach name");
+
+    var actions = document.createElement("div");
+    actions.className = "code-editor-header-actions";
+
+    var copyBtn = document.createElement("button");
+    copyBtn.type = "button";
+    copyBtn.className = "code-copy-btn";
+    copyBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+      '<span class="copy-label">Copy</span>';
+
+    var removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "approach-remove-btn";
+    removeBtn.title = "Remove this approach";
+    removeBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+    actions.appendChild(copyBtn);
+    actions.appendChild(removeBtn);
+    header.appendChild(labelInput);
+    header.appendChild(actions);
+
+    var body = document.createElement("div");
+    body.className = "code-editor-body";
+    var pre = document.createElement("pre");
+    pre.className = "code-highlight";
+    pre.setAttribute("aria-hidden", "true");
+    var textarea = document.createElement("textarea");
+    textarea.className = "code-raw";
+    textarea.spellcheck = false;
+    textarea.placeholder = "// Write your Java solution here…";
+    textarea.value = approach.code || "";
+    body.appendChild(pre);
+    body.appendChild(textarea);
+
+    wrap.appendChild(header);
+    wrap.appendChild(body);
+
+    function syncHighlight() {
+      var code = textarea.value;
+      pre.innerHTML = (code ? highlightJava(code) : "") + "\n";
+    }
+    syncHighlight();
+
+    var saveTimer;
+    function scheduleSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(onEdit, 450);
+    }
+
+    textarea.addEventListener("input", function () {
+      approach.code = textarea.value;
+      syncHighlight();
+      scheduleSave();
+    });
+    textarea.addEventListener("keydown", function (e) {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        var start = textarea.selectionStart;
+        var end   = textarea.selectionEnd;
+        textarea.value = textarea.value.slice(0, start) + "    " + textarea.value.slice(end);
+        textarea.selectionStart = textarea.selectionEnd = start + 4;
+        approach.code = textarea.value;
+        syncHighlight();
+        scheduleSave();
+      }
+    });
+    textarea.addEventListener("focus", function () { wrap.classList.add("is-focused"); });
+    textarea.addEventListener("blur",  function () { wrap.classList.remove("is-focused"); });
+
+    labelInput.addEventListener("input", function () {
+      approach.label = labelInput.value;
+      scheduleSave();
+    });
+
+    var copyLabelEl = copyBtn.querySelector(".copy-label");
+    copyBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      navigator.clipboard.writeText(textarea.value).then(function () {
+        if (copyLabelEl) copyLabelEl.textContent = "Copied!";
+        copyBtn.classList.add("copied");
+        setTimeout(function () {
+          if (copyLabelEl) copyLabelEl.textContent = "Copy";
+          copyBtn.classList.remove("copied");
+        }, 1500);
+      }).catch(function () { showToast("Couldn't copy to clipboard."); });
+    });
+
+    removeBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      onRemove();
+    });
+
+    return wrap;
+  }
+
+  /* Mounts the full "+ Add approach" UI for one problem into mountEl.
+     onNoteChange fires whenever an approach is added, edited, or removed,
+     so the caller can refresh the notes-button badge and "Saved" hint. */
+  function setupCodePane(problemId, mountEl, onNoteChange) {
+    var approaches = loadApproachesFor(problemId);
+
+    var listEl = document.createElement("div");
+    listEl.className = "approaches-list";
+
+    var addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "add-approach-btn";
+    addBtn.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+      'Add approach';
+
+    mountEl.appendChild(listEl);
+    mountEl.appendChild(addBtn);
+
+    function persist() {
+      var key = problemId + ":approaches";
+      if (approaches.length) state.notes[key] = approaches;
+      else delete state.notes[key];
+      dbSet(kNotes(), state.notes).catch(function () {
+        showToast("Couldn't save note.");
+      });
+      onNoteChange();
+    }
+
+    function render() {
+      listEl.innerHTML = "";
+      approaches.forEach(function (approach, idx) {
+        var block = createApproachBlock(approach, persist, function () {
+          approaches.splice(idx, 1);
+          persist();
+          render();
+        });
+        listEl.appendChild(block);
+      });
+    }
+    render();
+
+    addBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      approaches.push({
+        id: "a" + Date.now() + Math.random().toString(36).slice(2, 6),
+        label: "Approach " + (approaches.length + 1),
+        code: ""
+      });
+      persist();
+      render();
+      var boxes = listEl.querySelectorAll(".code-raw");
+      var last = boxes[boxes.length - 1];
+      if (last) setTimeout(function () { last.focus(); }, 50);
+    });
+
+    return {
+      hasContent: function () {
+        return approaches.some(function (a) { return (a.code || "").trim().length > 0; });
+      }
+    };
+  }
+
+  /* ======================================================
    * Render list
    * ====================================================== */
   function renderList() {
@@ -693,8 +958,6 @@
       var note      = state.notes[p.id] || "";
       var hasNote   = note.length > 0;
       var panelId   = "np-" + p.id.replace(/[^a-z0-9]/gi, "-");
-      var codeId    = "cp-" + p.id.replace(/[^a-z0-9]/gi, "-");
-      var highlId   = "hl-" + p.id.replace(/[^a-z0-9]/gi, "-");
 
       var row = document.createElement("div");
       row.className = "row" + (isDone ? " is-done" : "");
@@ -735,22 +998,9 @@
             '<textarea class="notes-textarea"' +
               ' placeholder="Your notes for this problem…">' + esc(note) + '</textarea>' +
           '</div>' +
-          /* ---- Code editor pane ---- */
+          /* ---- Code editor pane: built dynamically, see setupCodePane() ---- */
           '<div class="notes-pane" data-pane="code">' +
-            '<div class="code-editor-wrap" id="' + codeId + '">' +
-              '<div class="code-editor-header">' +
-                '<span class="code-editor-lang"><span class="code-editor-lang-dot"></span>Java</span>' +
-                '<button class="code-copy-btn" type="button">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-                  '<span class="copy-label">Copy</span>' +
-                '</button>' +
-              '</div>' +
-              '<div class="code-editor-body">' +
-                '<pre class="code-highlight" id="' + highlId + '" aria-hidden="true"></pre>' +
-                '<textarea class="code-raw" spellcheck="false"' +
-                  ' placeholder="// Write your Java solution here…"></textarea>' +
-              '</div>' +
-            '</div>' +
+            '<div class="code-pane-mount"></div>' +
           '</div>' +
           '<div class="notes-saved"></div>' +
         '</div>';
@@ -766,22 +1016,30 @@
       });
 
       /* ---- Notes panel toggle ---- */
-      var btn      = row.querySelector(".notes-btn");
-      var panel    = row.querySelector(".notes-panel");
-      var ta       = row.querySelector(".notes-textarea");
-      var savedEl  = row.querySelector(".notes-saved");
-      var codeWrap = row.querySelector(".code-editor-wrap");
-      var codeRaw  = row.querySelector(".code-raw");
-      var codeHl   = row.querySelector(".code-highlight");
-      var copyBtn  = row.querySelector(".code-copy-btn");
-      var tabs     = row.querySelectorAll(".notes-tab");
-      var panes    = row.querySelectorAll(".notes-pane");
+      var btn        = row.querySelector(".notes-btn");
+      var panel      = row.querySelector(".notes-panel");
+      var ta         = row.querySelector(".notes-textarea");
+      var savedEl    = row.querySelector(".notes-saved");
+      var codeMount  = row.querySelector(".code-pane-mount");
+      var tabs       = row.querySelectorAll(".notes-tab");
+      var panes      = row.querySelectorAll(".notes-pane");
 
-      /* Load stored code (keyed separately) */
-      var codeKey = p.id + ":code";
-      var storedCode = state.notes[codeKey] || "";
-      codeRaw.value = storedCode;
-      codeHl.innerHTML = (storedCode ? highlightJava(storedCode) : "") + "\n";
+      function refreshNoteBadge() {
+        var filled = (state.notes[p.id] || "").trim().length > 0 || codePane.hasContent();
+        btn.classList.toggle("has-note", filled);
+        btn.title = filled ? "Edit note" : "Add note";
+      }
+
+      function flashSaved() {
+        savedEl.textContent = "Saved ✓";
+        setTimeout(function () { savedEl.textContent = ""; }, 1500);
+      }
+
+      /* Builds the "+ Add approach" list of Java code blocks for this problem. */
+      var codePane = setupCodePane(p.id, codeMount, function () {
+        refreshNoteBadge();
+        flashSaved();
+      });
 
       btn.addEventListener("click", function (e) {
         e.stopPropagation();
@@ -799,8 +1057,7 @@
           panes.forEach(function (pn) {
             pn.classList.toggle("active", pn.getAttribute("data-pane") === target);
           });
-          if (target === "code") { setTimeout(function () { codeRaw.focus(); }, 50); }
-          else { setTimeout(function () { ta.focus(); }, 50); }
+          if (target !== "code") { setTimeout(function () { ta.focus(); }, 50); }
         });
       });
 
@@ -811,75 +1068,12 @@
         savedEl.textContent = "";
         saveTimer = setTimeout(function () {
           saveNoteFor(p.id, ta.value);
-          var filled = ta.value.trim().length > 0;
-          btn.classList.toggle("has-note", filled || (state.notes[codeKey] || "").trim().length > 0);
-          btn.title = (filled || (state.notes[codeKey] || "").trim().length > 0) ? "Edit note" : "Add note";
-          savedEl.textContent = "Saved ✓";
-          setTimeout(function () { savedEl.textContent = ""; }, 1500);
+          refreshNoteBadge();
+          flashSaved();
         }, 500);
       });
 
-      /* ---- Code editor: live highlighting + save ---- */
-      var codeTimer;
-      function syncHighlight() {
-        var code = codeRaw.value;
-        /* Append a trailing newline so the pre is always at least as tall as the textarea */
-        codeHl.innerHTML = (code ? highlightJava(code) : "") + "\n";
-      }
-
-      codeRaw.addEventListener("input", function () {
-        syncHighlight();
-        clearTimeout(codeTimer);
-        savedEl.textContent = "";
-        codeTimer = setTimeout(function () {
-          saveNoteFor(codeKey, codeRaw.value);
-          var hasTxt = (state.notes[p.id] || "").trim().length > 0;
-          var hasCd  = codeRaw.value.trim().length > 0;
-          btn.classList.toggle("has-note", hasTxt || hasCd);
-          btn.title = (hasTxt || hasCd) ? "Edit note" : "Add note";
-          savedEl.textContent = "Saved ✓";
-          setTimeout(function () { savedEl.textContent = ""; }, 1500);
-        }, 500);
-      });
-
-      /* Tab key in code editor → insert 4 spaces */
-      codeRaw.addEventListener("keydown", function (e) {
-        if (e.key === "Tab") {
-          e.preventDefault();
-          var start = codeRaw.selectionStart;
-          var end   = codeRaw.selectionEnd;
-          codeRaw.value = codeRaw.value.slice(0, start) + "    " + codeRaw.value.slice(end);
-          codeRaw.selectionStart = codeRaw.selectionEnd = start + 4;
-          syncHighlight();
-        }
-      });
-
-      /* Focus ring on code wrap */
-      codeRaw.addEventListener("focus",function(){ codeWrap.classList.add("is-focused"); });
-      codeRaw.addEventListener("blur", function(){ codeWrap.classList.remove("is-focused"); });
-
-      /* Copy button */
-      var copyLabel = copyBtn.querySelector(".copy-label");
-      copyBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        navigator.clipboard.writeText(codeRaw.value).then(function () {
-          if (copyLabel) copyLabel.textContent = "Copied!";
-          copyBtn.classList.add("copied");
-          setTimeout(function () {
-            if (copyLabel) copyLabel.textContent = "Copy";
-            copyBtn.classList.remove("copied");
-          }, 1500);
-        }).catch(function () { showToast("Couldn't copy to clipboard."); });
-      });
-
-      /* Init highlight for existing stored code */
-      if (storedCode) { syncHighlight(); }
-
-      /* Update has-note badge considering both text + code */
-      if ((state.notes[p.id] || "").trim().length > 0 || storedCode.trim().length > 0) {
-        btn.classList.add("has-note");
-        btn.title = "Edit note";
-      }
+      refreshNoteBadge();
 
       listEl.appendChild(row);
     });
@@ -945,26 +1139,34 @@
   });
 
   /* ======================================================
-   * Init — open IndexedDB, then load & render
+   * 3. INIT — load topic data, then open IndexedDB, then render
    * ====================================================== */
-  openDB().then(function (database) {
+  loadTopicScript(topicId).then(function (data) {
+    buildProblems(data);
+    document.title = (data.title || "DSA Practice") + " · DSA Practice";
+    document.getElementById("pageTitleText").textContent = data.title || "Practice";
+    updateDayControls();
+    renderList();           // show the list immediately, before storage loads
+    return openDB();
+  }).then(function (database) {
     db = database;
-    document.getElementById("dbDot").className  = "db-dot";
-    document.getElementById("dbLabel").textContent = "IndexedDB";
+    setDbStatus(true);
     return loadAll();
   }).then(function () {
-    updateDayControls();
     renderProgress();
     renderList();
   }).catch(function (err) {
-    console.error("IndexedDB error:", err);
-    document.getElementById("dbDot").className  = "db-dot error";
-    document.getElementById("dbLabel").textContent = "DB Error";
-    showToast("IndexedDB unavailable — progress won't be saved.");
-    /* Render anyway so the UI is usable */
-    updateDayControls();
-    renderProgress();
-    renderList();
+    console.error(err);
+    if (!allProblems.length) {
+      /* The topic data file itself failed to load — nothing to show. */
+      showFatalError(err.message || "Something went wrong loading this topic.");
+    } else {
+      /* Topic loaded fine, only storage failed — app still usable, just won't persist. */
+      setDbStatus(false);
+      showToast("IndexedDB unavailable — progress won't be saved.");
+      renderProgress();
+      renderList();
+    }
   });
 
 })();
