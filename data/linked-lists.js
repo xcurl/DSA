@@ -10,7 +10,7 @@ window.TOPIC_DATA = {
     {
       name: "Easy",
       problems: [
-        { title: "Reverse Linked List",         approach: "Iterative / Recursive",     target: "Meta, Amazon1" },
+        { title: "Reverse Linked List",         approach: "Iterative / Recursive",     target: "Meta, Amazon" },
         { title: "Merge Two Sorted Lists",      approach: "Two Pointers / Dummy Node", target: "Amazon, Microsoft" },
         { title: "Linked List Cycle",           approach: "Fast & Slow Pointers",      target: "Amazon, Spotify" },
         { title: "Middle of the Linked List",   approach: "Fast & Slow Pointers",      target: "Amazon, Apple" },
