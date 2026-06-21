@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DSA Progress Roadmap</title>
+<style>
+  :root {
+    --bg: #000000;
+    --surface-2: #141414;
+    --surface-2-hover: #1f1f1f;
+    --border: #262626;
+    --border-soft: #1b1b1b;
+    --text: #f5f5f5;
+    --text-secondary: #9a9a9a;
+    --accent: #8ab4f8;
+    --danger: #f04438;
+    --danger-hover: #d93c30;
+    --done-tint: rgba(138,180,248,0.07);
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { max-width: 880px; margin: 0 auto; padding: 40px 28px 60px; }
+  @media (max-width: 560px) { .app { padding: 28px 16px 48px; } }
+
+  .title { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 28px; color: #fff; }
+  @media (max-width: 560px) { .title { font-size: 26px; margin-bottom: 20px; } }
+
+  /* ---- top controls ---- */
+  .controls { margin-bottom: 8px; }
+  .control-row {
+    display: grid; grid-template-columns: 130px 1fr; align-items: center;
+    column-gap: 16px; margin-bottom: 14px;
+  }
+  @media (max-width: 560px) {
+    .control-row { grid-template-columns: 1fr; row-gap: 8px; margin-bottom: 16px; }
+  }
+  .control-label { font-size: 14px; color: var(--text-secondary); }
+
+  .stepper {
+    display: flex; align-items: center; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 999px; height: 46px; overflow: hidden;
+  }
+  .stepper-arrow {
+    flex: 0 0 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+    background: transparent; border: none; color: var(--text); cursor: pointer;
+  }
+  .stepper-arrow svg { width: 16px; height: 16px; }
+  .stepper-arrow:disabled { opacity: .3; cursor: default; }
+  .stepper-arrow:hover:not(:disabled) { background: var(--surface-2-hover); }
+  .stepper-value { flex: 1 1 auto; text-align: center; font-size: 14px; font-weight: 600; font-family: var(--mono); }
+
+  .search-input {
+    width: 100%; height: 46px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); padding: 0 18px; font-size: 14px;
+    outline: none; font-family: var(--sans);
+  }
+  .search-input::placeholder { color: var(--text-secondary); }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ---- table ---- */
+  .table-wrap { border-top: 1px solid var(--border); margin-top: 28px; }
+  .table-header {
+    display: grid; grid-template-columns: 40px 1fr 240px 110px; gap: 20px;
+    padding: 14px 4px; border-bottom: 1px solid var(--border);
+    color: var(--text-secondary); font-size: 13px; font-weight: 600;
+  }
+  @media (max-width: 680px) { .table-header { display: none; } }
+
+  .row {
+    display: grid; grid-template-columns: 40px 1fr 240px 110px; align-items: center;
+    gap: 20px; padding: 14px 4px; border-bottom: 1px solid var(--border-soft); cursor: pointer;
+  }
+  .row-top { display: contents; }
+  .cell-status { grid-column: 1; }
+  .cell-title { grid-column: 2; min-width: 0; font-size: 14.5px; color: var(--text); }
+  .cell-approach { grid-column: 3; font-size: 13px; color: var(--text-secondary); }
+  .cell-target { grid-column: 4; font-size: 13px; color: var(--text-secondary); }
+  .row:hover { background: rgba(255,255,255,0.035); }
+  .row.is-done { background: var(--done-tint); }
+  .row.is-done .cell-title { text-decoration: line-through; opacity: .65; }
+  .row:focus-visible { outline: 1.5px solid var(--accent); outline-offset: -1px; }
+
+  .check-circle {
+    width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid var(--text-secondary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .row.is-done .check-circle { background: var(--accent); border-color: var(--accent); }
+  .check-circle svg { width: 11px; height: 11px; display: block; }
+
+  @media (max-width: 680px) {
+    .table-wrap { border-top: none; margin-top: 20px; }
+    .row {
+      display: block; border: 1px solid var(--border); border-radius: 14px;
+      margin-bottom: 8px; padding: 12px 14px;
+    }
+    .row-top { display: flex; align-items: center; gap: 12px; }
+    .cell-title { flex: 1 1 auto; min-width: 0; font-weight: 500; }
+    .cell-target { flex: 0 0 auto; white-space: nowrap; }
+    .cell-approach { display: block; margin-top: 5px; padding-left: 33px; }
+  }
+
+  .loading, .empty-state { text-align: center; padding: 48px 0; color: var(--text-secondary); font-size: 14px; }
+
+  /* ---- progress footer ---- */
+  .progress-section { text-align: center; padding: 32px 0 4px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 24px; }
+  .progress-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+  .progress-value { font-family: var(--mono); font-size: 18px; color: var(--text); letter-spacing: .3px; }
+  .progress-bar-mini { width: 180px; height: 3px; border-radius: 999px; background: var(--border); margin: 16px auto 0; overflow: hidden; }
+  .progress-bar-mini-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s ease; }
+
+  /* ---- modal ---- */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50;
+  }
+  .modal-overlay[hidden] { display: none; }
+  .modal {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px;
+    max-width: 360px; width: 100%; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    animation: modalIn .16s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  .modal-title { margin: 0 0 8px; font-size: 17px; font-weight: 600; color: #fff; }
+  .modal-body { margin: 0 0 20px; font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn { border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+  .btn-secondary { background: var(--surface-2-hover); color: var(--text); }
+  .btn-secondary:hover { background: #262626; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: var(--danger-hover); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #ffffff; color: #000000; padding: 10px 18px; border-radius: 10px;
+    font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 60;
+  }
+  .toast[hidden] { display: none; }
+</style>
+</head>
+<body>
+
+  <div class="app">
+    <h1 class="title">DSA Progress Roadmap</h1>
+
+    <div class="controls">
+      <div class="control-row">
+        <div class="control-label">Schedule Day</div>
+        <div class="stepper">
+          <button class="stepper-arrow" id="dayPrev" type="button" aria-label="Previous day">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="stepper-value" id="dayValue">Day 1</div>
+          <button class="stepper-arrow" id="dayNext" type="button" aria-label="Next day">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">Search Title</div>
+        <input class="search-input" id="searchInput" type="text" placeholder="Search this day's problems…" />
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <div>Status</div><div>Title</div><div>Approach</div><div>Targets</div>
+      </div>
+      <div class="list" id="list">
+        <div class="loading">Loading your saved progress…</div>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <hr class="divider" />
+      <div class="progress-label">Progress</div>
+      <div class="progress-value" id="progressValue">Loading…</div>
+      <div class="progress-bar-mini"><div class="progress-bar-mini-fill" id="progressFill"></div></div>
+      <hr class="divider" style="margin-top:24px;margin-bottom:0;" />
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
+      <h2 class="modal-title" id="modalTitle">Mark as not solved?</h2>
+      <p class="modal-body" id="modalBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+        <button class="btn btn-danger" id="modalConfirm">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Data ----------
+  var PROBLEMS_RAW = {
+    "Day 1": [
+      "Two Sum", "Best Time to Buy/Sell Stock", "Contains Duplicate", "Move Zeroes", "Remove Duplicates",
+      "Remove Element", "Majority Element", "Merge Sorted", "Squares of Sorted", "Find Pivot Index",
+      "Missing Number", "Intersection II", "Max Average Subarray", "Can Place Flowers", "Single Number"
+    ],
+    "Day 2": [
+      "3Sum", "Container with Water", "Product Except Self", "Max Subarray", "Merge Intervals",
+      "Search Rotated", "Find Min Rotated", "Sort Colors", "Subarray Sum K", "Rotate Array",
+      "Next Permutation", "Spiral Matrix", "Set Matrix Zeroes", "Kth Largest", "Combination Sum",
+      "Trapping Rain Water", "First Missing Positive", "Sliding Window Max", "Largest Histogram", "Median Sorted",
+      "Reverse Pairs", "Insert Interval", "Count Smaller", "Split Array", "Max Value Equation"
+    ],
+    "Day 3": [
+      "Valid Anagram", "Valid Palindrome", "Reverse String", "First Unique Char", "Longest Common Prefix",
+      "strStr", "Valid Parentheses", "Isomorphic Strings", "Word Pattern", "Add Strings",
+      "Reverse Vowels", "Ransom Note", "Length Last Word", "Array Equivalence", "Roman to Integer"
+    ],
+    "Day 4": [
+      "Longest Substring No Repeat", "Longest Palindrome Substring", "atoi", "Group Anagrams", "Longest Repeating Replacement",
+      "Valid Sudoku", "Decode String", "Find All Anagrams", "Min Add Parentheses", "Palindromic Substrings",
+      "String Compression", "Min Deletions", "Generate Parentheses", "Longest Palindrome 2-Letter", "Letter Combinations",
+      "Minimum Window Substring", "Edit Distance", "Longest Valid Parentheses", "Wildcard Matching", "Regular Expression",
+      "Text Justification", "Word Ladder", "Substring Concatenation", "Palindrome Pairs", "Distinct Subsequences"
+    ]
+  };
+  var STRATEGIES = {
+    "Day 1": "Hash Map / Two Pointers (Basic)",
+    "Day 2": "Sliding Window / Binary Search / DP",
+    "Day 3": "String Manipulation / Frequency Map",
+    "Day 4": "Advanced Window / Hard DP / Regex"
+  };
+  var COMPANIES = ["FAANG", "Stripe", "Uber", "Airbnb", "Microsoft"];
+  var DAYS = Object.keys(PROBLEMS_RAW);
+  var STORAGE_KEY = "dsa-roadmap:completed";
+
+  // Stable problem list — target company assigned deterministically by index
+  // (instead of Math.random()) so it doesn't reshuffle on every reload.
+  var allProblems = [];
+  DAYS.forEach(function (day) {
+    PROBLEMS_RAW[day].forEach(function (title, i) {
+      allProblems.push({
+        id: day + "-" + i,
+        day: day,
+        title: title,
+        approach: STRATEGIES[day],
+        target: COMPANIES[i % COMPANIES.length]
+      });
+    });
+  });
+
+  var state = {
+    day: DAYS[0],
+    search: "",
+    completed: new Set(),
+    loaded: false,
+    pending: null
+  };
+  var dayIndex = 0;
+
+  // ---------- Storage helpers ----------
+  function hasStorage() {
+    return typeof window.storage !== "undefined" && window.storage !== null;
+  }
+
+  function loadCompleted() {
+    if (!hasStorage()) return Promise.resolve([]);
+    return window.storage.get(STORAGE_KEY).then(function (res) {
+      if (!res || !res.value) return [];
+      try {
+        var parsed = JSON.parse(res.value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }).catch(function () {
+      return []; // key not found yet, or storage unavailable
+    });
+  }
+
+  function persistCompleted() {
+    if (!hasStorage()) return Promise.resolve();
+    var ids = Array.from(state.completed);
+    return window.storage.set(STORAGE_KEY, JSON.stringify(ids), false).then(function (result) {
+      if (!result) throw new Error("Storage write failed");
+    });
+  }
+
+  // ---------- Small UI helpers ----------
+  var toastTimer = null;
+  function showToast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg;
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, 3000);
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  var CHECK_SVG = '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+    '<path d="M3 8.5L6.2 11.7L13 4.5" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  // ---------- Day stepper ----------
+  function updateDayControls() {
+    document.getElementById("dayValue").textContent = state.day;
+    document.getElementById("dayPrev").disabled = dayIndex <= 0;
+    document.getElementById("dayNext").disabled = dayIndex >= DAYS.length - 1;
+  }
+
+  // ---------- Render ----------
+  function renderProgress() {
+    var total = allProblems.length;
+    var done = state.completed.size;
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById("progressFill").style.width = pct + "%";
+    document.getElementById("progressValue").textContent = state.loaded
+      ? done + " / " + total + " Problems"
+      : "Loading…";
+  }
+
+  function filteredProblems() {
+    var q = state.search.trim().toLowerCase();
+    return allProblems.filter(function (p) {
+      return p.day === state.day && (!q || p.title.toLowerCase().indexOf(q) !== -1);
+    });
+  }
+
+  function renderList() {
+    var list = document.getElementById("list");
+    if (!state.loaded) {
+      list.innerHTML = '<div class="loading">Loading your saved progress…</div>';
+      return;
+    }
+    var items = filteredProblems();
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty-state">No problems match your search.</div>';
+      return;
+    }
+    list.innerHTML = "";
+    items.forEach(function (p) {
+      var isDone = state.completed.has(p.id);
+      var row = document.createElement("div");
+      row.className = "row" + (isDone ? " is-done" : "");
+      row.setAttribute("role", "checkbox");
+      row.setAttribute("aria-checked", isDone ? "true" : "false");
+      row.setAttribute("tabindex", "0");
+      row.innerHTML =
+        '<div class="row-top">' +
+          '<span class="cell-status"><span class="check-circle">' + (isDone ? CHECK_SVG : "") + '</span></span>' +
+          '<span class="cell-title">' + escapeHtml(p.title) + '</span>' +
+          '<span class="cell-target">' + escapeHtml(p.target) + '</span>' +
+        '</div>' +
+        '<div class="cell-approach">' + escapeHtml(p.approach) + '</div>';
+      row.addEventListener("click", function () { toggleProblem(p); });
+      row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleProblem(p);
+        }
+      });
+      list.appendChild(row);
+    });
+  }
+
+  // ---------- Toggle + confirmation modal ----------
+  function toggleProblem(problem) {
+    if (state.completed.has(problem.id)) {
+      openConfirm(problem);
+    } else {
+      state.completed.add(problem.id);
+      renderList();
+      renderProgress();
+      persistCompleted().catch(function () {
+        showToast("Couldn't save your progress.");
+      });
+    }
+  }
+
+  function openConfirm(problem) {
+    state.pending = problem;
+    document.getElementById("modalBody").textContent =
+      '"' + problem.title + '" will be removed from your completed list. Are you sure?';
+    var overlay = document.getElementById("modalOverlay");
+    overlay.hidden = false;
+    document.getElementById("modalCancel").focus();
+  }
+
+  function closeConfirm() {
+    state.pending = null;
+    document.getElementById("modalOverlay").hidden = true;
+  }
+
+  function confirmRemove() {
+    var problem = state.pending;
+    if (!problem) { closeConfirm(); return; }
+    state.completed.delete(problem.id);
+    closeConfirm();
+    renderList();
+    renderProgress();
+    persistCompleted().catch(function () {
+      showToast("Couldn't update your saved progress.");
+    });
+  }
+
+  // ---------- Wire up + init ----------
+  document.getElementById("searchInput").addEventListener("input", function (e) {
+    state.search = e.target.value;
+    renderList();
+  });
+  document.getElementById("dayPrev").addEventListener("click", function () {
+    if (dayIndex > 0) {
+      dayIndex--;
+      state.day = DAYS[dayIndex];
+      updateDayControls();
+      renderList();
+    }
+  });
+  document.getElementById("dayNext").addEventListener("click", function () {
+    if (dayIndex < DAYS.length - 1) {
+      dayIndex++;
+      state.day = DAYS[dayIndex];
+      updateDayControls();
+      renderList();
+    }
+  });
+  document.getElementById("modalCancel").addEventListener("click", closeConfirm);
+  document.getElementById("modalConfirm").addEventListener("click", confirmRemove);
+  document.getElementById("modalOverlay").addEventListener("click", function (e) {
+    if (e.target.id === "modalOverlay") closeConfirm();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !document.getElementById("modalOverlay").hidden) closeConfirm();
+  });
+
+  updateDayControls();
+  renderProgress();
+  renderList();
+
+  loadCompleted().then(function (ids) {
+    state.completed = new Set(ids);
+    state.loaded = true;
+    renderProgress();
+    renderList();
+  });
+})();
+</script>
+</body>
+</html>
