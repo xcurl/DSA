@@ -10,46 +10,46 @@ window.TOPIC_DATA = {
     {
       name: "Easy",
       problems: [
-        { title: "Reverse Linked List",         approach: "Iterative / Recursive",     target: "FAANG" },
-        { title: "Merge Two Sorted Lists",      approach: "Two Pointers / Dummy Node", target: "Stripe" },
-        { title: "Linked List Cycle",           approach: "Fast & Slow Pointers",      target: "Uber" },
-        { title: "Middle of the Linked List",   approach: "Fast & Slow Pointers",      target: "Airbnb" },
-        { title: "Palindrome Linked List",      approach: "Fast/Slow + Reverse Mid",   target: "Microsoft" },
-        { title: "Remove Linked List Elements", approach: "Dummy Node",                target: "FAANG" },
-        { title: "Intersection of Two Lists",   approach: "Two Pointers / Length Diff",target: "Stripe" },
-        { title: "Delete Node in a Linked List",approach: "Value Swap / Copy Next",    target: "Uber" },
-        { title: "Remove Duplicates",           approach: "Single Pointer Traverse",   target: "Airbnb" },
-        { title: "Binary to Integer",           approach: "Bit Manipulation",          target: "Microsoft" }
+        { title: "Reverse Linked List",         approach: "Iterative / Recursive",     target: "Meta, Amazon" },
+        { title: "Merge Two Sorted Lists",      approach: "Two Pointers / Dummy Node", target: "Amazon, Microsoft" },
+        { title: "Linked List Cycle",           approach: "Fast & Slow Pointers",      target: "Amazon, Spotify" },
+        { title: "Middle of the Linked List",   approach: "Fast & Slow Pointers",      target: "Amazon, Apple" },
+        { title: "Palindrome Linked List",      approach: "Fast/Slow + Reverse Mid",   target: "Meta, Amazon" },
+        { title: "Remove Linked List Elements", approach: "Dummy Node",                target: "Apple, Google" },
+        { title: "Intersection of Two Lists",   approach: "Two Pointers / Length Diff",target: "Amazon, Meta" },
+        { title: "Delete Node in a Linked List",approach: "Value Swap / Copy Next",    target: "Apple, Microsoft" },
+        { title: "Remove Duplicates",           approach: "Single Pointer Traverse",   target: "Amazon, Adobe" },
+        { title: "Binary to Integer",           approach: "Bit Manipulation",          target: "Apple, Amazon" }
       ]
     },
     {
       name: "Medium",
       problems: [
-        { title: "Add Two Numbers",             approach: "Math / Dummy Node",         target: "FAANG" },
-        { title: "Remove Nth Node From End",    approach: "Fast & Slow Pointers",      target: "Stripe" },
-        { title: "Copy List with Random Pointer",approach: "Hash Map / Interweaving",  target: "Uber" },
-        { title: "Linked List Cycle II",        approach: "Floyd's Cycle-Finding",     target: "Airbnb" },
-        { title: "Reorder List",                approach: "Find Mid + Reverse + Merge",target: "Microsoft" },
-        { title: "LRU Cache",                   approach: "Doubly Linked List + Map",  target: "FAANG" },
-        { title: "Swap Nodes in Pairs",         approach: "Dummy Node / Recursion",    target: "Stripe" },
-        { title: "Rotate List",                 approach: "Circular Connect & Break",  target: "Uber" },
-        { title: "Sort List",                   approach: "Merge Sort (Bottom-Up)",    target: "Airbnb" },
-        { title: "Partition List",              approach: "Two Dummy Lists",           target: "Microsoft" },
-        { title: "Odd Even Linked List",        approach: "Two Pointers",              target: "FAANG" },
-        { title: "Flatten Multilevel DLL",      approach: "DFS / Stack",               target: "Stripe" },
-        { title: "Insertion Sort List",         approach: "Dummy Node + Scan",         target: "Uber" },
-        { title: "Add Two Numbers II",          approach: "Stack / Reverse List",      target: "Airbnb" },
-        { title: "Design Linked List",          approach: "Object Oriented Design",    target: "Microsoft" }
+        { title: "Add Two Numbers",             approach: "Math / Dummy Node",         target: "Amazon, Bloomberg" },
+        { title: "Remove Nth Node From End",    approach: "Fast & Slow Pointers",      target: "Meta, Amazon" },
+        { title: "Copy List with Random Pointer",approach: "Hash Map / Interweaving",  target: "Amazon, Meta" },
+        { title: "Linked List Cycle II",        approach: "Floyd's Cycle-Finding",     target: "Meta, Amazon" },
+        { title: "Reorder List",                approach: "Find Mid + Reverse + Merge",target: "Meta, Amazon" },
+        { title: "LRU Cache",                   approach: "Doubly Linked List + Map",  target: "Amazon, Meta" },
+        { title: "Swap Nodes in Pairs",         approach: "Dummy Node / Recursion",    target: "Amazon, Microsoft" },
+        { title: "Rotate List",                 approach: "Circular Connect & Break",  target: "Microsoft, Bloomberg" },
+        { title: "Sort List",                   approach: "Merge Sort (Bottom-Up)",    target: "Google, Meta" },
+        { title: "Partition List",              approach: "Two Dummy Lists",           target: "Microsoft, Apple" },
+        { title: "Odd Even Linked List",        approach: "Two Pointers",              target: "Amazon, Microsoft" },
+        { title: "Flatten Multilevel DLL",      approach: "DFS / Stack",               target: "Bloomberg, Meta" },
+        { title: "Insertion Sort List",         approach: "Dummy Node + Scan",         target: "Google, Microsoft" },
+        { title: "Add Two Numbers II",          approach: "Stack / Reverse List",      target: "Amazon, Bloomberg" },
+        { title: "Design Linked List",          approach: "Object Oriented Design",    target: "Microsoft, Apple" }
       ]
     },
     {
       name: "Hard",
       problems: [
-        { title: "Merge k Sorted Lists",        approach: "Min-Heap / Divide & Conquer", target: "FAANG" },
-        { title: "Reverse Nodes in k-Group",    approach: "Dummy Node + Iteration",      target: "Stripe" },
-        { title: "LFU Cache",                   approach: "Two Maps + DLL",              target: "Uber" },
-        { title: "All O`one Data Structure",    approach: "Doubly Linked List + Map",    target: "Airbnb" },
-        { title: "Design Skiplist",             approach: "Probabilistic List",          target: "Microsoft" }
+        { title: "Merge k Sorted Lists",        approach: "Min-Heap / Divide & Conquer", target: "Amazon, Meta" },
+        { title: "Reverse Nodes in k-Group",    approach: "Dummy Node + Iteration",      target: "Meta, Amazon" },
+        { title: "LFU Cache",                   approach: "Two Maps + DLL",              target: "Amazon, Google" },
+        { title: "All O`one Data Structure",    approach: "Doubly Linked List + Map",    target: "LinkedIn, Amazon" },
+        { title: "Design Skiplist",             approach: "Probabilistic List",          target: "Amazon, Google" }
       ]
     }
   ]
