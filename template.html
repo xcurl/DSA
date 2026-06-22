@@ -1,1175 +1,1813 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DSA Practice</title>
-<style>
-  :root {
-    --bg: #000000;
-    --surface-2: #141414;
-    --surface-2-hover: #1f1f1f;
-    --border: #262626;
-    --border-soft: #1b1b1b;
-    --text: #f5f5f5;
-    --text-secondary: #9a9a9a;
-    --accent: #8ab4f8;
-    --danger: #f04438;
-    --danger-hover: #d93c30;
-    --done-tint: rgba(138,180,248,0.07);
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--text);
-    font-family: var(--sans); -webkit-font-smoothing: antialiased;
-  }
-  .app { max-width: 920px; margin: 0 auto; padding: 32px 28px 60px; }
-  @media (max-width: 560px) { .app { padding: 24px 16px 48px; } }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Practice</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface-2: #141414;
+      --surface-2-hover: #1f1f1f;
+      --border: #262626;
+      --border-soft: #1b1b1b;
+      --text: #f5f5f5;
+      --text-secondary: #9a9a9a;
+      --accent: #8ab4f8;
+      --danger: #f04438;
+      --danger-hover: #d93c30;
+      --done-tint: rgba(138, 180, 248, 0.07);
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  .topbar { margin-bottom: 18px; }
-  .back-link {
-    font-size: 13px; color: var(--text-secondary); text-decoration: none;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .back-link:hover { color: var(--text); }
-  .back-link svg { width: 13px; height: 13px; }
+    * {
+      box-sizing: border-box;
+    }
 
-  .title {
-    font-size: 30px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 24px; color: #fff;
-    display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px;
-  }
-  @media (max-width: 560px) { .title { font-size: 24px; margin-bottom: 18px; } }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* ---- progress: now lives at the top ---- */
-  .progress-top { margin-bottom: 26px; }
-  .progress-top-row {
-    display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 9px;
-  }
-  .progress-label { font-size: 13px; color: var(--text-secondary); }
-  .progress-value { font-family: var(--mono); font-size: 14px; color: var(--text); letter-spacing: .2px; }
-  .progress-bar-mini { width: 100%; height: 5px; border-radius: 999px; background: var(--border); overflow: hidden; }
-  .progress-bar-mini-fill { height: 100%; background: var(--accent); width: 0%; transition: width .3s ease; }
+    .app {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 32px 28px 60px;
+    }
 
-  /* ---- controls: Day + Search side by side ---- */
-  .controls-bar {
-    display: flex; align-items: center; gap: 16px; margin-bottom: 8px;
-  }
-  .control-group { display: flex; align-items: center; gap: 10px; }
-  .control-group.day-group { flex: 0 0 auto; }
-  .control-group.search-group { flex: 1 1 auto; min-width: 0; }
-  .control-label { font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
-  @media (max-width: 600px) {
-    .controls-bar { flex-wrap: wrap; row-gap: 10px; }
-    .control-group.day-group, .control-group.search-group { flex: 1 1 100%; }
-  }
+    @media (max-width: 560px) {
+      .app {
+        padding: 24px 16px 48px;
+      }
+    }
 
-  .stepper {
-    display: flex; align-items: center; background: var(--surface-2);
-    border: 1px solid var(--border); border-radius: 999px; height: 46px; overflow: hidden;
-    width: 160px; flex: 0 0 160px;
-  }
-  .stepper-arrow {
-    flex: 0 0 46px; height: 46px; display: flex; align-items: center; justify-content: center;
-    background: transparent; border: none; color: var(--text); cursor: pointer;
-  }
-  .stepper-arrow svg { width: 16px; height: 16px; }
-  .stepper-arrow:disabled { opacity: .3; cursor: default; }
-  .stepper-arrow:hover:not(:disabled) { background: var(--surface-2-hover); }
-  .stepper-value { flex: 1; text-align: center; font-size: 14px; font-weight: 600; font-family: var(--mono); white-space: nowrap; }
+    .topbar {
+      margin-bottom: 18px;
+    }
 
-  .search-input {
-    width: 100%; height: 46px; border-radius: 999px; border: 1px solid var(--border);
-    background: var(--surface-2); color: var(--text); padding: 0 18px; font-size: 14px;
-    outline: none; font-family: var(--sans);
-  }
-  .search-input::placeholder { color: var(--text-secondary); }
-  .search-input:focus { border-color: var(--accent); }
+    .back-link {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  /* ---- table ---- */
-  .table-wrap { border-top: 1px solid var(--border); margin-top: 24px; }
+    .back-link:hover {
+      color: var(--text);
+    }
 
-  .table-header {
-    display: grid; grid-template-columns: 40px 1fr 220px 100px 36px; gap: 0 20px;
-    padding: 14px 4px; border-bottom: 1px solid var(--border);
-    color: var(--text-secondary); font-size: 13px; font-weight: 600;
-  }
-  @media (max-width: 680px) { .table-header { display: none; } }
+    .back-link svg {
+      width: 13px;
+      height: 13px;
+    }
 
-  .row {
-    display: grid; grid-template-columns: 40px 1fr 220px 100px 36px;
-    gap: 0 20px; border-bottom: 1px solid var(--border-soft); cursor: pointer;
-  }
-  .row-top { display: contents; }
+    .title {
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0 0 24px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+      justify-content: space-between;
+    }
 
-  .cell-status   { grid-column: 1; grid-row: 1; padding: 14px 0; display: flex; align-items: center; }
-  .cell-title    { grid-column: 2; grid-row: 1; padding: 14px 0; min-width: 0; font-size: 14.5px; color: var(--text); display: flex; align-items: center; }
-  .cell-approach { grid-column: 3; grid-row: 1; padding: 14px 0; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; }
-  .cell-target   { grid-column: 4; grid-row: 1; padding: 14px 0; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; }
-  .cell-note     { grid-column: 5; grid-row: 1; padding: 14px 0; display: flex; align-items: center; justify-content: center; }
+    @media (max-width: 560px) {
+      .title {
+        font-size: 24px;
+        margin-bottom: 18px;
+      }
+    }
 
-  /* Notes panel: row 2, spans every column */
-  .notes-panel { grid-column: 1 / -1; grid-row: 2; display: none; padding: 2px 4px 16px 60px; }
-  .notes-panel.is-open { display: block; }
+    /* ---- progress: now lives at the top ---- */
+    .progress-top {
+      margin-bottom: 26px;
+    }
 
-  .row:hover { background: rgba(255,255,255,.035); }
-  .row.is-done { background: var(--done-tint); }
-  .row.is-done .cell-title { text-decoration: line-through; opacity: .65; }
+    .progress-top-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 9px;
+    }
 
-  .check-circle {
-    width: 21px; height: 21px; border-radius: 50%; border: 1.5px solid var(--text-secondary);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .row.is-done .check-circle { background: var(--accent); border-color: var(--accent); }
-  .check-circle svg { width: 11px; height: 11px; display: block; }
+    .progress-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
 
-  /* Notes button */
-  .notes-btn {
-    width: 28px; height: 28px; border-radius: 8px;
-    background: transparent; border: none; cursor: pointer; padding: 0;
-    color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
-    transition: color .15s, background .15s; flex-shrink: 0;
-  }
-  .notes-btn:hover { color: var(--text); background: rgba(255,255,255,.08); }
-  .notes-btn.has-note { color: var(--accent); }
-  .notes-btn svg { width: 15px; height: 15px; pointer-events: none; }
+    .progress-value {
+      font-family: var(--mono);
+      font-size: 14px;
+      color: var(--text);
+      letter-spacing: .2px;
+    }
 
-  /* ---- Notes panel: tabs ---- */
-  .notes-tabs {
-    display: flex; gap: 2px; margin-bottom: 10px;
-    background: rgba(255,255,255,.04); border-radius: 10px; padding: 3px; width: fit-content;
-  }
-  .notes-tab {
-    display: flex; align-items: center; gap: 5px;
-    padding: 5px 13px; border-radius: 7px; border: none; background: transparent;
-    color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer;
-    font-family: var(--sans); transition: background .15s, color .15s;
-  }
-  .notes-tab svg { width: 13px; height: 13px; flex-shrink: 0; }
-  .notes-tab.active { background: var(--surface-2-hover); color: var(--text); }
-  .notes-tab:hover:not(.active) { color: var(--text); }
+    .progress-bar-mini {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--border);
+      overflow: hidden;
+    }
 
-  /* Plain notes textarea */
-  .notes-textarea {
-    width: 100%; min-height: 86px;
-    background: rgba(255,255,255,.04); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: var(--sans);
-    font-size: 13px; line-height: 1.6; padding: 10px 14px; resize: vertical; outline: none;
-  }
-  .notes-textarea:focus { border-color: var(--accent); }
-  .notes-textarea::placeholder { color: var(--text-secondary); }
+    .progress-bar-mini-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width .3s ease;
+    }
 
-  /* ---- Java code editor ---- */
-  .code-editor-wrap {
-    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-    background: #0d1117; display: flex; flex-direction: column;
-  }
-  .code-editor-wrap.is-focused { border-color: var(--accent); }
-  .code-editor-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 6px 12px; background: #161b22; border-bottom: 1px solid #30363d;
-    flex-shrink: 0;
-  }
-  .code-editor-header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .approach-label-input {
-    flex: 1 1 auto; min-width: 0; background: transparent; border: none; outline: none;
-    color: #8ab4f8; font-size: 12px; font-weight: 600; font-family: var(--mono);
-    padding: 4px 6px; border-radius: 6px; margin-right: 8px;
-  }
-  .approach-label-input:focus { background: rgba(255,255,255,.06); color: #e6edf3; }
-  .approach-label-input::placeholder { color: #6e7681; }
-  .approach-remove-btn {
-    width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent;
-    color: var(--text-secondary); cursor: pointer; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0; padding: 0;
-  }
-  .approach-remove-btn svg { width: 13px; height: 13px; pointer-events: none; }
-  .approach-remove-btn:hover { color: var(--danger); background: rgba(240,68,56,.12); }
+    /* ---- controls: Day + Search side by side ---- */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
 
-  /* Multiple approaches per problem */
-  .approaches-list { display: flex; flex-direction: column; gap: 12px; }
-  .approaches-list:not(:empty) { margin-bottom: 12px; }
-  .add-approach-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12.5px; font-weight: 600; color: var(--accent);
-    background: rgba(138,180,248,.08); border: 1px dashed rgba(138,180,248,.35);
-    border-radius: 8px; padding: 7px 14px; cursor: pointer; font-family: var(--sans);
-    transition: background .15s, border-color .15s;
-  }
-  .add-approach-btn svg { width: 13px; height: 13px; }
-  .add-approach-btn:hover { background: rgba(138,180,248,.14); border-color: rgba(138,180,248,.55); }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .code-copy-btn {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 11px; font-weight: 600; color: var(--text-secondary); background: transparent;
-    border: 1px solid #30363d; border-radius: 6px; padding: 3px 9px; cursor: pointer;
-    font-family: var(--sans); transition: color .15s, border-color .15s;
-  }
-  .code-copy-btn svg { width: 12px; height: 12px; }
-  .code-copy-btn:hover { color: var(--text); border-color: #8ab4f8; }
-  .code-copy-btn.copied { color: #4caf50; border-color: #4caf50; }
+    .control-group.day-group {
+      flex: 0 0 auto;
+    }
 
-  /*
+    .control-group.search-group {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 600px) {
+      .controls-bar {
+        flex-wrap: wrap;
+        row-gap: 10px;
+      }
+
+      .control-group.day-group,
+      .control-group.search-group {
+        flex: 1 1 100%;
+      }
+    }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      height: 46px;
+      overflow: hidden;
+      width: 160px;
+      flex: 0 0 160px;
+    }
+
+    .stepper-arrow {
+      flex: 0 0 46px;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .stepper-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .stepper-arrow:disabled {
+      opacity: .3;
+      cursor: default;
+    }
+
+    .stepper-arrow:hover:not(:disabled) {
+      background: var(--surface-2-hover);
+    }
+
+    .stepper-value {
+      flex: 1;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      padding: 0 18px;
+      font-size: 14px;
+      outline: none;
+      font-family: var(--sans);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    /* ---- table ---- */
+    .table-wrap { border-top: 1px solid var(--border); margin-top: 20px; }
+    .table-header { display: none; }
+
+    /* Flat rows — bottom border only on all screen sizes */
+    .row {
+      display: block;
+      border-bottom: 1px solid var(--border-soft);
+      padding: 14px 0;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .row-top { display: flex; align-items: center; gap: 12px; }
+
+    .cell-status { display: flex; flex: 0 0 auto; }
+    .cell-title {
+      flex: 1 1 auto; min-width: 0;
+      font-size: 14.5px; font-weight: 500; color: var(--text);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .cell-approach { display: block; margin-top: 4px; padding-left: 33px;
+      font-size: 13px; color: var(--text-secondary); }
+    .cell-target { display: flex; flex: 0 0 auto; font-size: 13px;
+      color: var(--text-secondary); white-space: nowrap; }
+    .cell-note { display: flex; flex: 0 0 auto; }
+
+    .notes-panel { display: none; padding: 10px 0 2px; }
+    .notes-panel.is-open { display: block; }
+
+    .row:hover { background: rgba(255,255,255,.03); }
+    .row.is-done { background: var(--done-tint); }
+    .row.is-done .cell-title { text-decoration: line-through; opacity: .65; }
+
+    /* Desktop: switch to CSS grid so all 5 cells share one row */
+    @media (min-width: 680px) {
+      .table-header {
+        display: grid; grid-template-columns: 40px 1fr 200px 110px 52px;
+        gap: 0 16px; padding: 12px 4px; border-bottom: 1px solid var(--border);
+        color: var(--text-secondary); font-size: 13px; font-weight: 600;
+      }
+      .row {
+        display: grid; grid-template-columns: 40px 1fr 200px 110px 52px;
+        gap: 0 16px; padding: 0;
+      }
+      .row-top { display: contents; }
+      .cell-status   { grid-column: 1; grid-row: 1; padding: 13px 0; display: flex; align-items: center; }
+      .cell-title    { grid-column: 2; grid-row: 1; padding: 13px 0; font-weight: 400; min-width: 0; display: flex; align-items: center; gap: 6px; }
+      .cell-approach { grid-column: 3; grid-row: 1; padding: 13px 0; margin-top: 0; padding-left: 0; display: flex; align-items: center; font-size: 13px; color: var(--text-secondary); }
+      .cell-target   { grid-column: 4; grid-row: 1; padding: 13px 0; display: flex; align-items: center; font-size: 13px; color: var(--text-secondary); }
+      .cell-note     { grid-column: 5; grid-row: 1; padding: 13px 0; display: flex; align-items: center; justify-content: center; }
+      .notes-panel   { grid-column: 1 / -1; grid-row: 2; padding: 0 4px 14px 56px; }
+    }
+
+    .check-circle {
+      width: 21px; height: 21px; border-radius: 50%;
+      border: 1.5px solid var(--text-secondary);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .row.is-done .check-circle { background: var(--accent); border-color: var(--accent); }
+    .check-circle svg { width: 11px; height: 11px; display: block; }
+
+    /* External link icon */
+    .link-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; flex-shrink: 0;
+      color: var(--text-secondary); opacity: 0;
+      transition: opacity .15s, color .15s;
+      text-decoration: none;
+    }
+    .row:hover .link-btn { opacity: .5; }
+    .link-btn:hover { opacity: 1 !important; color: var(--accent); }
+    .link-btn svg { width: 14px; height: 14px; pointer-events: none; }
+
+    /* Notes button */
+    .notes-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color .15s, background .15s;
+      flex-shrink: 0;
+    }
+
+    .notes-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .notes-btn.has-note {
+      color: var(--accent);
+    }
+
+    .notes-btn svg {
+      width: 15px;
+      height: 15px;
+      pointer-events: none;
+    }
+
+    /* ---- Notes panel: tabs ---- */
+    .notes-tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, .04);
+      border-radius: 10px;
+      padding: 3px;
+      width: fit-content;
+    }
+
+    .notes-tab {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 13px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background .15s, color .15s;
+    }
+
+    .notes-tab svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+    }
+
+    .notes-tab.active {
+      background: var(--surface-2-hover);
+      color: var(--text);
+    }
+
+    .notes-tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    /* Plain notes textarea */
+    .notes-textarea {
+      width: 100%;
+      min-height: 86px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 10px 14px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .notes-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .notes-textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    /* ---- Java code editor ---- */
+    .code-editor-wrap {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0d1117;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .code-editor-wrap.is-focused {
+      border-color: var(--accent);
+    }
+
+    .code-editor-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-shrink: 0;
+    }
+
+    .code-editor-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .approach-label-input {
+      flex: 1 1 auto;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #8ab4f8;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: var(--mono);
+      padding: 4px 6px;
+      border-radius: 6px;
+      margin-right: 8px;
+    }
+
+    .approach-label-input:focus {
+      background: rgba(255, 255, 255, .06);
+      color: #e6edf3;
+    }
+
+    .approach-label-input::placeholder {
+      color: #6e7681;
+    }
+
+    .approach-remove-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      padding: 0;
+    }
+
+    .approach-remove-btn svg {
+      width: 13px;
+      height: 13px;
+      pointer-events: none;
+    }
+
+    .approach-remove-btn:hover {
+      color: var(--danger);
+      background: rgba(240, 68, 56, .12);
+    }
+
+    /* Multiple approaches per problem */
+    .approaches-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .approaches-list:not(:empty) {
+      margin-bottom: 12px;
+    }
+
+    .add-approach-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(138, 180, 248, .08);
+      border: 1px dashed rgba(138, 180, 248, .35);
+      border-radius: 8px;
+      padding: 7px 14px;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background .15s, border-color .15s;
+    }
+
+    .add-approach-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .add-approach-btn:hover {
+      background: rgba(138, 180, 248, .14);
+      border-color: rgba(138, 180, 248, .55);
+    }
+
+    .code-copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 3px 9px;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: color .15s, border-color .15s;
+    }
+
+    .code-copy-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .code-copy-btn:hover {
+      color: var(--text);
+      border-color: #8ab4f8;
+    }
+
+    .code-copy-btn.copied {
+      color: #4caf50;
+      border-color: #4caf50;
+    }
+
+    /*
    * The editor body uses CSS grid overlay:
    * both <pre> and <textarea> sit in the same grid cell,
    * so they are pixel-perfectly aligned — no absolute positioning.
    */
-  .code-editor-body {
-    display: grid; min-height: 140px; max-height: 360px; overflow: auto;
-  }
-  .code-editor-body > * {
-    /* Both children share grid-area 1/1 — stacked */
-    grid-area: 1 / 1;
-    font-family: var(--mono); font-size: 13px; line-height: 1.65;
-    padding: 12px 14px; margin: 0;
-    tab-size: 4; white-space: pre-wrap; word-break: break-word;
-    /* Make sure both scroll together */
-    overflow: hidden; min-height: 140px;
-  }
-  /* Highlighted display */
-  .code-highlight {
-    color: #e6edf3; background: transparent; border: none; outline: none;
-    pointer-events: none; user-select: none;
-    /* Ensure it doesn't block the textarea */
-    z-index: 1;
-  }
-  /* Raw textarea on top */
-  .code-raw {
-    background: transparent; border: none; outline: none; resize: none;
-    color: transparent; caret-color: #e6edf3;
-    z-index: 2; position: relative;
-  }
-
-  /* Java syntax colours */
-  .j-kw    { color: #ff7b72; }   /* keywords */
-  .j-type  { color: #79c0ff; }   /* types/class-names */
-  .j-str   { color: #a5d6ff; }   /* strings */
-  .j-num   { color: #f2cc60; }   /* numbers */
-  .j-cmt   { color: #8b949e; font-style: italic; }  /* comments */
-  .j-ann   { color: #d2a8ff; }   /* annotations */
-  .j-op    { color: #ff7b72; }   /* operators */
-  .j-meth  { color: #d2a8ff; }   /* method calls */
-
-  .notes-saved { font-size: 11px; color: var(--text-secondary); margin-top: 6px; min-height: 16px; }
-  .notes-pane  { display: none; }
-  .notes-pane.active { display: block; }
-
-  /* ---- Mobile ---- */
-  @media (max-width: 680px) {
-    .table-wrap { border-top: none; margin-top: 18px; }
-    .row {
-      display: block; border: 1px solid var(--border); border-radius: 14px;
-      margin-bottom: 8px; padding: 12px 14px;
+    .code-editor-body {
+      display: grid;
+      min-height: 140px;
+      max-height: 360px;
+      overflow: auto;
     }
-    .row-top { display: flex; align-items: center; gap: 12px; }
-    .cell-status { padding: 0; display: flex; flex: 0 0 auto; }
-    .cell-title  { padding: 0; display: block; flex: 1 1 auto; min-width: 0; font-weight: 500; }
-    .cell-approach { display: block; padding: 0; margin-top: 5px; padding-left: 33px; }
-    .cell-target { padding: 0; display: flex; flex: 0 0 auto; white-space: nowrap; }
-    .cell-note   { padding: 0; display: flex; flex: 0 0 auto; }
-    .notes-panel { padding: 10px 0 0; }
-  }
 
-  .loading, .empty-state, .fatal-error {
-    text-align: center; padding: 48px 0; color: var(--text-secondary); font-size: 14px;
-  }
-  .fatal-error a { color: var(--accent); text-decoration: none; }
-  .fatal-error a:hover { text-decoration: underline; }
+    .code-editor-body>* {
+      /* Both children share grid-area 1/1 — stacked */
+      grid-area: 1 / 1;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.65;
+      padding: 12px 14px;
+      margin: 0;
+      tab-size: 4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      /* Make sure both scroll together */
+      overflow: hidden;
+      min-height: 140px;
+    }
 
-  /* ---- modal ---- */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.7);
-    display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 50;
-  }
-  .modal-overlay[hidden] { display: none; }
-  .modal {
-    background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px;
-    max-width: 360px; width: 100%; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.5);
-    animation: modalIn .16s ease;
-  }
-  @keyframes modalIn { from { opacity:0; transform: scale(.96); } to { opacity:1; transform: scale(1); } }
-  .modal-title { margin: 0 0 8px; font-size: 17px; font-weight: 600; color: #fff; }
-  .modal-body  { margin: 0 0 20px; font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-  .btn { border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
-  .btn-secondary { background: var(--surface-2-hover); color: var(--text); }
-  .btn-secondary:hover { background: #262626; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-danger:hover { background: var(--danger-hover); }
+    /* Highlighted display */
+    .code-highlight {
+      color: #e6edf3;
+      background: transparent;
+      border: none;
+      outline: none;
+      pointer-events: none;
+      user-select: none;
+      /* Ensure it doesn't block the textarea */
+      z-index: 1;
+    }
 
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: #fff; color: #000; padding: 10px 18px; border-radius: 10px;
-    font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.4); z-index: 60;
-  }
-  .toast[hidden] { display: none; }
+    /* Raw textarea on top */
+    .code-raw {
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: transparent;
+      caret-color: #e6edf3;
+      z-index: 2;
+      position: relative;
+    }
 
-  /* DB status badge */
-  .db-badge {
-    display: inline-flex; align-items: center; gap: 5px; font-size: 11px;
-    color: var(--text-secondary); vertical-align: middle; font-weight: 400;
-  }
-  .db-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; }
-  .db-dot.error { background: var(--danger); }
-</style>
+    /* Java syntax colours */
+    .j-kw {
+      color: #ff7b72;
+    }
+
+    /* keywords */
+    .j-type {
+      color: #79c0ff;
+    }
+
+    /* types/class-names */
+    .j-str {
+      color: #a5d6ff;
+    }
+
+    /* strings */
+    .j-num {
+      color: #f2cc60;
+    }
+
+    /* numbers */
+    .j-cmt {
+      color: #8b949e;
+      font-style: italic;
+    }
+
+    /* comments */
+    .j-ann {
+      color: #d2a8ff;
+    }
+
+    /* annotations */
+    .j-op {
+      color: #ff7b72;
+    }
+
+    /* operators */
+    .j-meth {
+      color: #d2a8ff;
+    }
+
+    /* method calls */
+
+    .notes-saved {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      min-height: 16px;
+    }
+
+    .notes-pane {
+      display: none;
+    }
+
+    .notes-pane.active {
+      display: block;
+    }
+
+    /* (mobile styles now handled in the default styles above) */
+
+    .loading,
+    .empty-state,
+    .fatal-error {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .fatal-error a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .fatal-error a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---- modal ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 50;
+    }
+
+    .modal-overlay[hidden] {
+      display: none;
+    }
+
+    .modal {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 360px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+      animation: modalIn .16s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-title {
+      margin: 0 0 8px;
+      font-size: 17px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .modal-body {
+      margin: 0 0 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+
+    .btn-secondary {
+      background: var(--surface-2-hover);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #262626;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      color: #000;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+      z-index: 60;
+    }
+
+    .toast[hidden] {
+      display: none;
+    }
+
+    /* ---- Convex sync badge (title area) ---- */
+    .db-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--text-secondary);
+      vertical-align: middle; font-weight: 400;
+    }
+    .db-dot { width: 6px; height: 6px; border-radius: 50%; background: #4caf50; }
+    .db-dot.error { background: var(--danger); }
+    .db-dot.syncing {
+      background: var(--accent);
+      animation: pulse-dot 1s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="app">
-  <div class="topbar">
-    <a class="back-link" href="index.html">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      All topics
-    </a>
-  </div>
-
-  <h1 class="title" id="pageTitle">
-    <span id="pageTitleText">Loading…</span>
-    <span class="db-badge" id="dbBadge">
-      <span class="db-dot" id="dbDot"></span>
-      <span id="dbLabel">IndexedDB</span>
-    </span>
-  </h1>
-
-  <div class="progress-top">
-    <div class="progress-top-row">
-      <span class="progress-label">Progress</span>
-      <span class="progress-value" id="progressValue">—</span>
+  <div class="app">
+    <div class="topbar">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        All topics
+      </a>
     </div>
-    <div class="progress-bar-mini"><div class="progress-bar-mini-fill" id="progressFill"></div></div>
-  </div>
 
-  <div class="controls-bar">
-    <div class="control-group day-group">
-      <span class="control-label">Day</span>
-      <div class="stepper">
-        <button class="stepper-arrow" id="dayPrev" type="button" aria-label="Previous day">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="stepper-value" id="dayValue">—</div>
-        <button class="stepper-arrow" id="dayNext" type="button" aria-label="Next day">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+    <h1 class="title" id="pageTitle">
+      <span id="pageTitleText">Loading…</span>
+      <span class="db-badge" id="dbBadge">
+        <span class="db-dot syncing" id="dbDot"></span>
+        <span id="dbLabel">Connecting…</span>
+      </span>
+    </h1>
+
+    <div class="progress-top">
+      <div class="progress-top-row">
+        <span class="progress-label">Progress</span>
+        <span class="progress-value" id="progressValue">—</span>
+      </div>
+      <div class="progress-bar-mini">
+        <div class="progress-bar-mini-fill" id="progressFill"></div>
       </div>
     </div>
-    <div class="control-group search-group">
-      <input class="search-input" id="searchInput" type="text" placeholder="Search this day's problems…" />
-    </div>
-  </div>
 
-  <div class="table-wrap">
-    <div class="table-header">
-      <div>Status</div><div>Title</div><div>Approach</div><div>Targets</div><div></div>
+    <div class="controls-bar">
+      <div class="control-group day-group">
+        <span class="control-label">Day</span>
+        <div class="stepper">
+          <button class="stepper-arrow" id="dayPrev" type="button" aria-label="Previous day">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="stepper-value" id="dayValue">—</div>
+          <button class="stepper-arrow" id="dayNext" type="button" aria-label="Next day">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="control-group search-group">
+        <input class="search-input" id="searchInput" type="text" placeholder="Search this day's problems…" />
+      </div>
     </div>
-    <div class="list" id="list">
-      <div class="loading">Loading topic…</div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <div>Status</div>
+        <div>Title</div>
+        <div>Approach</div>
+        <div>Targets</div>
+        <div></div>
+      </div>
+      <div class="list" id="list">
+        <div class="loading">Loading topic…</div>
+      </div>
     </div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay" hidden>
-  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
-    <h2 class="modal-title" id="modalTitle">Mark as not solved?</h2>
-    <p class="modal-body" id="modalBody"></p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="modalCancel">Cancel</button>
-      <button class="btn btn-danger" id="modalConfirm">Remove</button>
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalBody">
+      <h2 class="modal-title" id="modalTitle">Mark as not solved?</h2>
+      <p class="modal-body" id="modalBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modalCancel">Cancel</button>
+        <button class="btn btn-danger" id="modalConfirm">Remove</button>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="toast" id="toast" hidden></div>
+  <div class="toast" id="toast" hidden></div>
 
-<script>
-(function () {
-  "use strict";
+  <script>
+    (function () {
+      "use strict";
 
-  /* ======================================================
-   * 1. WHICH TOPIC AM I?
-   * This is the only thing that differs between pages —
-   * everything below is generic template logic.
-   * ====================================================== */
-  var topicId = new URLSearchParams(window.location.search).get("topic") || "";
+      /* ======================================================
+       * 1. WHICH TOPIC AM I?
+       * This is the only thing that differs between pages —
+       * everything below is generic template logic.
+       * ====================================================== */
+      var topicId = new URLSearchParams(window.location.search).get("topic") || "";
 
-  /* ======================================================
-   * STATE
-   * ====================================================== */
-  var state = {
-    day: "",
-    search: "",
-    completed: new Set(),
-    notes: {},
-    pending: null
-  };
-  var DAYS = [];
-  var dayIndex = 0;
-  var allProblems = [];
-  var db = null;
+      /* ======================================================
+       * CONVEX CONFIG
+       * Production deployment URL — change only if you redeploy.
+       * ====================================================== */
+      var CONVEX_URL = "https://agreeable-impala-393.convex.cloud";
 
-  /* IndexedDB keys are namespaced per topic so multiple topic
-     pages can share the same database without clobbering
-     each other's progress. */
-  function kCompleted() { return topicId + ":completed"; }
-  function kNotes()     { return topicId + ":notes"; }
+      /* Stable per-device user identity stored in localStorage.
+         Since only you use this app, this is enough for cross-device sync:
+         all your devices share the same fixed string "dsa-user-me". */
+      var USER_ID = "dsa-user-me";
 
-  /* ======================================================
-   * 2. LOAD THE TOPIC'S DATA FILE (data/<topic>.js)
-   * Plain <script src> — not fetch() — so this also works
-   * when the page is opened directly from disk (file://),
-   * with no local server and no CORS issues.
-   * ====================================================== */
-  function loadTopicScript(id) {
-    return new Promise(function (resolve, reject) {
-      if (!id) { reject(new Error("No topic was specified in the URL.")); return; }
-      var s = document.createElement("script");
-      s.src = "data/" + id + ".js";
-      s.onload = function () {
-        if (window.TOPIC_DATA) resolve(window.TOPIC_DATA);
-        else reject(new Error("data/" + id + ".js loaded but did not set TOPIC_DATA."));
+      /* ======================================================
+       * STATE
+       * ====================================================== */
+      var state = {
+        day: "",
+        search: "",
+        completed: new Set(),
+        notes: {},
+        pending: null
       };
-      s.onerror = function () {
-        reject(new Error("Couldn't find data/" + id + ".js — check the topic id matches the data file name."));
-      };
-      document.head.appendChild(s);
-    });
-  }
+      var DAYS = [];
+      var dayIndex = 0;
+      var allProblems = [];
 
-  function buildProblems(data) {
-    DAYS = [];
-    allProblems = [];
-    (data.days || []).forEach(function (d) {
-      DAYS.push(d.name);
-      (d.problems || []).forEach(function (p, i) {
-        allProblems.push({
-          id: d.name + "-" + i,
-          day: d.name,
-          title: p.title,
-          approach: p.approach,
-          target: p.target
+      /* ======================================================
+       * 2. LOAD TOPIC DATA — Convex (with localStorage cache)
+       * Cache key: dsa-cache-<topicId>, TTL 5 minutes.
+       * Shows cached data instantly; refreshes silently in background.
+       * Falls back to the old JS script file if Convex is unreachable.
+       * ====================================================== */
+      var CACHE_TTL = 5 * 60 * 1000; // 5 min
+      var _cacheKey = "dsa-cache-" + topicId;
+
+      function getCached() {
+        try {
+          var raw = localStorage.getItem(_cacheKey);
+          if (!raw) return null;
+          var obj = JSON.parse(raw);
+          if (Date.now() - obj.ts > CACHE_TTL) return null; // stale
+          return obj.data;
+        } catch (e) { return null; }
+      }
+      function setCache(data) {
+        try { localStorage.setItem(_cacheKey, JSON.stringify({ ts: Date.now(), data: data })); }
+        catch (e) {}
+      }
+
+      function loadTopicFromConvex(id) {
+        return convexQuery("problems:listForTopic", { topicId: id })
+          .then(function (days) {
+            if (!days || !days.length) throw new Error("No problems found in Convex for: " + id);
+            var data = { title: id, days: days };
+            /* Try to get the title from Convex topics table */
+            return convexQuery("topics:get", { topicId: id })
+              .then(function (topic) {
+                if (topic && topic.name) data.title = topic.name;
+                return data;
+              })
+              .catch(function () { return data; });
+          });
+      }
+
+      /* Legacy fallback: load from data/<id>.js file */
+      function loadTopicScript(id) {
+        return new Promise(function (resolve, reject) {
+          if (!id) { reject(new Error("No topic was specified in the URL.")); return; }
+          var s = document.createElement("script");
+          s.src = "data/" + id + ".js";
+          s.onload = function () {
+            if (window.TOPIC_DATA) resolve(window.TOPIC_DATA);
+            else reject(new Error("data/" + id + ".js loaded but did not set TOPIC_DATA."));
+          };
+          s.onerror = function () {
+            reject(new Error("Couldn't find data/" + id + ".js."));
+          };
+          document.head.appendChild(s);
         });
-      });
-    });
-    state.day = DAYS[0] || "";
-    dayIndex = 0;
-  }
+      }
 
-  function showFatalError(message) {
-    document.getElementById("pageTitleText").textContent = "Couldn't load this page";
-    document.getElementById("dbBadge").style.display = "none";
-    document.querySelector(".progress-top").style.display = "none";
-    document.querySelector(".controls-bar").style.display = "none";
-    document.getElementById("list").innerHTML =
-      '<div class="fatal-error">' + esc(message) + '<br><br><a href="index.html">&larr; Back to all topics</a></div>';
-  }
-
-  /* ======================================================
-   * IndexedDB setup
-   * ====================================================== */
-  var DB_NAME    = "dsa-roadmap-db";
-  var DB_VERSION = 1;
-  var STORE_KV   = "keyval";   // simple key-value store
-
-  function openDB() {
-    return new Promise(function (resolve, reject) {
-      var req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onupgradeneeded = function (e) {
-        var d = e.target.result;
-        if (!d.objectStoreNames.contains(STORE_KV)) {
-          d.createObjectStore(STORE_KV);
+      /**
+       * Main loader: cache-then-network.
+       * Returns a Promise that resolves with topic data.
+       * If cache exists → resolves immediately, then refreshes in background.
+       * If no cache → fetches from Convex, falls back to JS file.
+       */
+      function loadTopicData(id) {
+        var cached = getCached();
+        if (cached) {
+          /* Serve from cache immediately, refresh silently */
+          setTimeout(function () {
+            loadTopicFromConvex(id).then(setCache).catch(function () {});
+          }, 100);
+          return Promise.resolve(cached);
         }
-      };
-      req.onsuccess = function (e) { resolve(e.target.result); };
-      req.onerror   = function (e) { reject(e.target.error); };
-    });
-  }
-
-  function dbGet(key) {
-    return new Promise(function (resolve, reject) {
-      var tx  = db.transaction(STORE_KV, "readonly");
-      var req = tx.objectStore(STORE_KV).get(key);
-      req.onsuccess = function () { resolve(req.result); };
-      req.onerror   = function () { reject(req.error); };
-    });
-  }
-
-  function dbSet(key, val) {
-    return new Promise(function (resolve, reject) {
-      var tx  = db.transaction(STORE_KV, "readwrite");
-      var req = tx.objectStore(STORE_KV).put(val, key);
-      req.onsuccess = function () { resolve(); };
-      req.onerror   = function () { reject(req.error); };
-    });
-  }
-
-  /* ======================================================
-   * Load / Save (async, IndexedDB)
-   * ====================================================== */
-  function loadAll() {
-    return Promise.all([
-      dbGet(kCompleted()).then(function (val) {
-        state.completed = new Set(Array.isArray(val) ? val : []);
-      }),
-      dbGet(kNotes()).then(function (val) {
-        state.notes = (val && typeof val === "object") ? val : {};
-      })
-    ]);
-  }
-
-  function saveCompleted() {
-    dbSet(kCompleted(), Array.from(state.completed)).catch(function () {
-      showToast("Couldn't save — storage may be unavailable.");
-    });
-  }
-
-  function saveNoteFor(problemId, text) {
-    if (text.trim()) {
-      state.notes[problemId] = text;
-    } else {
-      delete state.notes[problemId];
-    }
-    dbSet(kNotes(), state.notes).catch(function () {
-      showToast("Couldn't save note.");
-    });
-  }
-
-  /* ======================================================
-   * Java syntax highlighter
-   * ====================================================== */
-  var JAVA_KEYWORDS = new Set([
-    "abstract","assert","boolean","break","byte","case","catch","char","class",
-    "const","continue","default","do","double","else","enum","extends","final",
-    "finally","float","for","goto","if","implements","import","instanceof","int",
-    "interface","long","native","new","package","private","protected","public",
-    "return","short","static","strictfp","super","switch","synchronized","this",
-    "throw","throws","transient","try","var","void","volatile","while",
-    "true","false","null","record","sealed","permits","yield"
-  ]);
-
-  var JAVA_TYPES = new Set([
-    "String","Integer","Long","Double","Float","Boolean","Character","Byte","Short",
-    "Object","Class","System","Math","Arrays","ArrayList","LinkedList","HashMap",
-    "HashSet","TreeMap","TreeSet","Stack","Queue","Deque","PriorityQueue","List",
-    "Map","Set","Collection","Collections","Optional","StringBuilder","StringBuffer",
-    "Comparator","Comparable","Iterable","Iterator","Thread","Runnable","Exception",
-    "RuntimeException","NullPointerException","IndexOutOfBoundsException","Scanner",
-    "PrintStream","BufferedReader","InputStreamReader","Stream","Collectors","IntStream"
-  ]);
-
-  function highlightJava(code) {
-    /* We tokenise character by character to avoid regex pitfalls. */
-    var out = "";
-    var i = 0;
-    var len = code.length;
-
-    function peek(n) { return code.slice(i, i + n); }
-    function esc2(s) {
-      return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    }
-
-    while (i < len) {
-      var ch = code[i];
-
-      // Line comment //
-      if (peek(2) === "//") {
-        var end = code.indexOf("\n", i);
-        var seg = end === -1 ? code.slice(i) : code.slice(i, end);
-        out += '<span class="j-cmt">' + esc2(seg) + '</span>';
-        i += seg.length;
-        continue;
+        /* No cache — fetch from Convex */
+        setSyncStatus("syncing");
+        return loadTopicFromConvex(id)
+          .then(function (data) { setCache(data); return data; })
+          .catch(function () {
+            /* Convex failed — fall back to local JS file */
+            return loadTopicScript(id);
+          });
       }
 
-      // Block comment /* ... */
-      if (peek(2) === "/*") {
-        var ce = code.indexOf("*/", i + 2);
-        var seg2 = ce === -1 ? code.slice(i) : code.slice(i, ce + 2);
-        out += '<span class="j-cmt">' + esc2(seg2) + '</span>';
-        i += seg2.length;
-        continue;
+      function buildProblems(data) {
+        DAYS = [];
+        allProblems = [];
+        (data.days || []).forEach(function (d) {
+          DAYS.push(d.name);
+          (d.problems || []).forEach(function (p, i) {
+            allProblems.push({
+              id: d.name + "-" + i,
+              day: d.name,
+              title: p.title,
+              approach: p.approach,
+              target: p.target,
+              link: p.link || ""
+            });
+          });
+        });
+        state.day = DAYS[0] || "";
+        dayIndex = 0;
       }
 
-      // String literal
-      if (ch === '"') {
-        var s3 = '"';
-        i++;
-        while (i < len) {
-          var c2 = code[i];
-          s3 += c2; i++;
-          if (c2 === '\\' && i < len) { s3 += code[i]; i++; }
-          else if (c2 === '"') break;
-        }
-        out += '<span class="j-str">' + esc2(s3) + '</span>';
-        continue;
+      function showFatalError(message) {
+        document.getElementById("pageTitleText").textContent = "Couldn't load this page";
+        var badge = document.getElementById("dbBadge");
+        if (badge) badge.style.display = "none";
+        document.querySelector(".progress-top").style.display = "none";
+        document.querySelector(".controls-bar").style.display = "none";
+        document.getElementById("list").innerHTML =
+          '<div class="fatal-error">' + esc(message) + '<br><br><a href="index.html">&larr; Back to all topics</a></div>';
       }
 
-      // Char literal
-      if (ch === "'") {
-        var s4 = "'";
-        i++;
-        while (i < len) {
-          var c3 = code[i];
-          s4 += c3; i++;
-          if (c3 === '\\' && i < len) { s4 += code[i]; i++; }
-          else if (c3 === "'") break;
-        }
-        out += '<span class="j-str">' + esc2(s4) + '</span>';
-        continue;
-      }
-
-      // Annotation @Xyz
-      if (ch === "@") {
-        var ann = "@";
-        i++;
-        while (i < len && /[A-Za-z0-9_$]/.test(code[i])) { ann += code[i]; i++; }
-        out += '<span class="j-ann">' + esc2(ann) + '</span>';
-        continue;
-      }
-
-      // Number
-      if (/[0-9]/.test(ch) || (ch === "." && i + 1 < len && /[0-9]/.test(code[i+1]))) {
-        var num = "";
-        while (i < len && /[0-9_.xXbBoOlLfFdDeE+\-]/.test(code[i])) { num += code[i]; i++; }
-        out += '<span class="j-num">' + esc2(num) + '</span>';
-        continue;
-      }
-
-      // Word (keyword / type / method / identifier)
-      if (/[A-Za-z_$]/.test(ch)) {
-        var word = "";
-        while (i < len && /[A-Za-z0-9_$]/.test(code[i])) { word += code[i]; i++; }
-        // Look-ahead for method call
-        var after = code.slice(i).match(/^\s*\(/);
-        if (JAVA_KEYWORDS.has(word)) {
-          out += '<span class="j-kw">' + esc2(word) + '</span>';
-        } else if (JAVA_TYPES.has(word)) {
-          out += '<span class="j-type">' + esc2(word) + '</span>';
-        } else if (after) {
-          out += '<span class="j-meth">' + esc2(word) + '</span>';
+      function setSyncStatus(status) {
+        var dot   = document.getElementById("dbDot");
+        var label = document.getElementById("dbLabel");
+        if (!dot) return;
+        if (status === "syncing") {
+          dot.className = "db-dot syncing"; label.textContent = "Syncing…";
+        } else if (status === "error") {
+          dot.className = "db-dot error"; label.textContent = "Sync error";
         } else {
-          out += esc2(word);
+          dot.className = "db-dot"; label.textContent = "Synced";
         }
-        continue;
+      }
+      function setDbStatus(ok) { setSyncStatus(ok ? "ok" : "error"); }
+
+      /* ======================================================
+       * CONVEX HTTP API LAYER
+       * Replaces IndexedDB. All calls are fire-and-update:
+       * state is mutated optimistically, then persisted.
+       * ====================================================== */
+
+      /** Low-level: call a Convex query (GET-like, uses POST with args). */
+      function convexQuery(fnPath, args) {
+        return fetch(CONVEX_URL + "/api/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: fnPath, args: args, format: "json" })
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("Convex query failed: " + r.status);
+            return r.json();
+          })
+          .then(function (json) {
+            if (json.status === "success") return json.value;
+            throw new Error(json.errorMessage || "Query error");
+          });
       }
 
-      // Operators
-      if (/[+\-*/%&|^~!=<>?:]/.test(ch)) {
-        out += '<span class="j-op">' + esc2(ch) + '</span>';
-        i++;
-        continue;
+      /** Low-level: call a Convex mutation (write). */
+      function convexMutation(fnPath, args) {
+        return fetch(CONVEX_URL + "/api/mutation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: fnPath, args: args, format: "json" })
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error("Convex mutation failed: " + r.status);
+            return r.json();
+          })
+          .then(function (json) {
+            if (json.status === "success") return json.value;
+            throw new Error(json.errorMessage || "Mutation error");
+          });
       }
 
-      // Everything else (whitespace, punctuation, braces)
-      out += esc2(ch);
-      i++;
-    }
-    return out;
-  }
+      /* ======================================================
+       * Load / Save — Convex-backed
+       * ====================================================== */
 
-  /* ======================================================
-   * Small UI helpers
-   * ====================================================== */
-  var toastTimer;
-  function showToast(msg) {
-    var el = document.getElementById("toast");
-    el.textContent = msg; el.hidden = false;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { el.hidden = true; }, 3000);
-  }
+      /** Load all progress for this topic in one round-trip. */
+      function loadAll() {
+        return convexQuery("progress:getAll", {
+          userId: USER_ID,
+          topicId: topicId
+        }).then(function (data) {
+          // data is an object like { completed: "[...]", notes: "{...}" }
+          var completedRaw = data["completed"];
+          var notesRaw = data["notes"];
+          try {
+            state.completed = new Set(completedRaw ? JSON.parse(completedRaw) : []);
+          } catch (e) { state.completed = new Set(); }
+          try {
+            state.notes = notesRaw ? JSON.parse(notesRaw) : {};
+            if (typeof state.notes !== "object" || Array.isArray(state.notes)) state.notes = {};
+          } catch (e) { state.notes = {}; }
+        });
+      }
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
-  }
+      /** Persist completed set to Convex (fire-and-forget with error toast). */
+      function saveCompleted() {
+        setSyncStatus("syncing");
+        convexMutation("progress:set", {
+          userId: USER_ID,
+          topicId: topicId,
+          field: "completed",
+          value: JSON.stringify(Array.from(state.completed))
+        }).then(function () {
+          setSyncStatus("ok");
+        }).catch(function (err) {
+          console.error("saveCompleted:", err);
+          setSyncStatus("error");
+          showToast("Couldn't sync — check your connection.");
+        });
+      }
 
-  function setDbStatus(ok) {
-    document.getElementById("dbDot").className = ok ? "db-dot" : "db-dot error";
-    document.getElementById("dbLabel").textContent = ok ? "IndexedDB" : "DB Error";
-  }
+      /** Persist notes map to Convex (fire-and-forget). */
+      function saveNotes() {
+        setSyncStatus("syncing");
+        convexMutation("progress:set", {
+          userId: USER_ID,
+          topicId: topicId,
+          field: "notes",
+          value: JSON.stringify(state.notes)
+        }).then(function () {
+          setSyncStatus("ok");
+        }).catch(function (err) {
+          console.error("saveNotes:", err);
+          setSyncStatus("error");
+          showToast("Couldn't save note — check your connection.");
+        });
+      }
 
-  /* ======================================================
-   * SVG constants
-   * ====================================================== */
-  var CHECK_SVG =
-    '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.7L13 4.5"' +
-    ' stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      /** Legacy helper expected by setupCodePane / dbSet calls. */
+      function dbSet(key, val) {
+        /* key is like "<topicId>:notes" — we split off the field. */
+        state.notes = val; /* val is already the whole notes object */
+        saveNotes();
+        return Promise.resolve();
+      }
 
-  /* Notepad icon with lines */
-  var NOTE_SVG =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"' +
-    ' stroke-linecap="round" stroke-linejoin="round">' +
-    '<rect x="4" y="2" width="16" height="20" rx="2"/>' +
-    '<path d="M8 6h8M8 10h8M8 14h5"/>' +
-    '</svg>';
+      function saveNoteFor(problemId, text) {
+        if (text.trim()) {
+          state.notes[problemId] = text;
+        } else {
+          delete state.notes[problemId];
+        }
+        saveNotes();
+      }
 
-  /* ======================================================
-   * Day stepper
-   * ====================================================== */
-  function updateDayControls() {
-    document.getElementById("dayValue").textContent = state.day || "—";
-    document.getElementById("dayPrev").disabled = dayIndex <= 0;
-    document.getElementById("dayNext").disabled = dayIndex >= DAYS.length - 1;
-  }
+      /* ======================================================
+       * Java syntax highlighter
+       * ====================================================== */
+      var JAVA_KEYWORDS = new Set([
+        "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char", "class",
+        "const", "continue", "default", "do", "double", "else", "enum", "extends", "final",
+        "finally", "float", "for", "goto", "if", "implements", "import", "instanceof", "int",
+        "interface", "long", "native", "new", "package", "private", "protected", "public",
+        "return", "short", "static", "strictfp", "super", "switch", "synchronized", "this",
+        "throw", "throws", "transient", "try", "var", "void", "volatile", "while",
+        "true", "false", "null", "record", "sealed", "permits", "yield"
+      ]);
 
-  /* ======================================================
-   * Progress bar
-   * ====================================================== */
-  function renderProgress() {
-    var total = allProblems.length;
-    var done  = state.completed.size;
-    var pct   = total ? Math.round(done / total * 100) : 0;
-    document.getElementById("progressFill").style.width = pct + "%";
-    document.getElementById("progressValue").textContent = done + " / " + total + " Problems";
-  }
+      var JAVA_TYPES = new Set([
+        "String", "Integer", "Long", "Double", "Float", "Boolean", "Character", "Byte", "Short",
+        "Object", "Class", "System", "Math", "Arrays", "ArrayList", "LinkedList", "HashMap",
+        "HashSet", "TreeMap", "TreeSet", "Stack", "Queue", "Deque", "PriorityQueue", "List",
+        "Map", "Set", "Collection", "Collections", "Optional", "StringBuilder", "StringBuffer",
+        "Comparator", "Comparable", "Iterable", "Iterator", "Thread", "Runnable", "Exception",
+        "RuntimeException", "NullPointerException", "IndexOutOfBoundsException", "Scanner",
+        "PrintStream", "BufferedReader", "InputStreamReader", "Stream", "Collectors", "IntStream"
+      ]);
 
-  /* ======================================================
-   * Filter
-   * ====================================================== */
-  function filteredProblems() {
-    var q = state.search.trim().toLowerCase();
-    return allProblems.filter(function (p) {
-      return p.day === state.day && (!q || p.title.toLowerCase().indexOf(q) !== -1);
-    });
-  }
+      function highlightJava(code) {
+        /* We tokenise character by character to avoid regex pitfalls. */
+        var out = "";
+        var i = 0;
+        var len = code.length;
 
-  /* ======================================================
-   * Multiple Java approaches per problem
-   * ------------------------------------------------------
-   * Each problem can have any number of named code blocks
-   * ("Approach 1", "Approach 2", ...). They're stored as an
-   * array under notes[problemId + ":approaches"].
-   * ====================================================== */
+        function peek(n) { return code.slice(i, i + n); }
+        function esc2(s) {
+          return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
 
-  /* Returns the live array of approaches for a problem (mutating
-     it mutates state.notes directly, since it's the same reference).
-     Transparently migrates a problem that still has the old single
-     ":code" string from before this feature existed. */
-  function loadApproachesFor(problemId) {
-    var key = problemId + ":approaches";
-    var existing = state.notes[key];
-    if (Array.isArray(existing)) return existing;
+        while (i < len) {
+          var ch = code[i];
 
-    var legacyKey = problemId + ":code";
-    var legacyCode = state.notes[legacyKey];
-    if (legacyCode && String(legacyCode).trim()) {
-      var migrated = [{ id: "a1", label: "Approach 1", code: legacyCode }];
-      state.notes[key] = migrated;
-      delete state.notes[legacyKey];
-      dbSet(kNotes(), state.notes).catch(function () {});
-      return migrated;
-    }
-    return [];
-  }
+          // Line comment //
+          if (peek(2) === "//") {
+            var end = code.indexOf("\n", i);
+            var seg = end === -1 ? code.slice(i) : code.slice(i, end);
+            out += '<span class="j-cmt">' + esc2(seg) + '</span>';
+            i += seg.length;
+            continue;
+          }
 
-  /* Builds one Java code block (label input + copy + remove + editor)
-     for a single approach object { id, label, code }. */
-  function createApproachBlock(approach, onEdit, onRemove) {
-    var wrap = document.createElement("div");
-    wrap.className = "code-editor-wrap";
+          // Block comment /* ... */
+          if (peek(2) === "/*") {
+            var ce = code.indexOf("*/", i + 2);
+            var seg2 = ce === -1 ? code.slice(i) : code.slice(i, ce + 2);
+            out += '<span class="j-cmt">' + esc2(seg2) + '</span>';
+            i += seg2.length;
+            continue;
+          }
 
-    var header = document.createElement("div");
-    header.className = "code-editor-header";
+          // String literal
+          if (ch === '"') {
+            var s3 = '"';
+            i++;
+            while (i < len) {
+              var c2 = code[i];
+              s3 += c2; i++;
+              if (c2 === '\\' && i < len) { s3 += code[i]; i++; }
+              else if (c2 === '"') break;
+            }
+            out += '<span class="j-str">' + esc2(s3) + '</span>';
+            continue;
+          }
 
-    var labelInput = document.createElement("input");
-    labelInput.className = "approach-label-input";
-    labelInput.type = "text";
-    labelInput.value = approach.label || "Approach";
-    labelInput.placeholder = "Approach name";
-    labelInput.setAttribute("aria-label", "Approach name");
+          // Char literal
+          if (ch === "'") {
+            var s4 = "'";
+            i++;
+            while (i < len) {
+              var c3 = code[i];
+              s4 += c3; i++;
+              if (c3 === '\\' && i < len) { s4 += code[i]; i++; }
+              else if (c3 === "'") break;
+            }
+            out += '<span class="j-str">' + esc2(s4) + '</span>';
+            continue;
+          }
 
-    var actions = document.createElement("div");
-    actions.className = "code-editor-header-actions";
+          // Annotation @Xyz
+          if (ch === "@") {
+            var ann = "@";
+            i++;
+            while (i < len && /[A-Za-z0-9_$]/.test(code[i])) { ann += code[i]; i++; }
+            out += '<span class="j-ann">' + esc2(ann) + '</span>';
+            continue;
+          }
 
-    var copyBtn = document.createElement("button");
-    copyBtn.type = "button";
-    copyBtn.className = "code-copy-btn";
-    copyBtn.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-      '<span class="copy-label">Copy</span>';
+          // Number
+          if (/[0-9]/.test(ch) || (ch === "." && i + 1 < len && /[0-9]/.test(code[i + 1]))) {
+            var num = "";
+            while (i < len && /[0-9_.xXbBoOlLfFdDeE+\-]/.test(code[i])) { num += code[i]; i++; }
+            out += '<span class="j-num">' + esc2(num) + '</span>';
+            continue;
+          }
 
-    var removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.className = "approach-remove-btn";
-    removeBtn.title = "Remove this approach";
-    removeBtn.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+          // Word (keyword / type / method / identifier)
+          if (/[A-Za-z_$]/.test(ch)) {
+            var word = "";
+            while (i < len && /[A-Za-z0-9_$]/.test(code[i])) { word += code[i]; i++; }
+            // Look-ahead for method call
+            var after = code.slice(i).match(/^\s*\(/);
+            if (JAVA_KEYWORDS.has(word)) {
+              out += '<span class="j-kw">' + esc2(word) + '</span>';
+            } else if (JAVA_TYPES.has(word)) {
+              out += '<span class="j-type">' + esc2(word) + '</span>';
+            } else if (after) {
+              out += '<span class="j-meth">' + esc2(word) + '</span>';
+            } else {
+              out += esc2(word);
+            }
+            continue;
+          }
 
-    actions.appendChild(copyBtn);
-    actions.appendChild(removeBtn);
-    header.appendChild(labelInput);
-    header.appendChild(actions);
+          // Operators
+          if (/[+\-*/%&|^~!=<>?:]/.test(ch)) {
+            out += '<span class="j-op">' + esc2(ch) + '</span>';
+            i++;
+            continue;
+          }
 
-    var body = document.createElement("div");
-    body.className = "code-editor-body";
-    var pre = document.createElement("pre");
-    pre.className = "code-highlight";
-    pre.setAttribute("aria-hidden", "true");
-    var textarea = document.createElement("textarea");
-    textarea.className = "code-raw";
-    textarea.spellcheck = false;
-    textarea.placeholder = "// Write your Java solution here…";
-    textarea.value = approach.code || "";
-    body.appendChild(pre);
-    body.appendChild(textarea);
+          // Everything else (whitespace, punctuation, braces)
+          out += esc2(ch);
+          i++;
+        }
+        return out;
+      }
 
-    wrap.appendChild(header);
-    wrap.appendChild(body);
+      /* ======================================================
+       * Small UI helpers
+       * ====================================================== */
+      var toastTimer;
+      function showToast(msg) {
+        var el = document.getElementById("toast");
+        el.textContent = msg; el.hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () { el.hidden = true; }, 3000);
+      }
 
-    function syncHighlight() {
-      var code = textarea.value;
-      pre.innerHTML = (code ? highlightJava(code) : "") + "\n";
-    }
-    syncHighlight();
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
 
-    var saveTimer;
-    function scheduleSave() {
-      clearTimeout(saveTimer);
-      saveTimer = setTimeout(onEdit, 450);
-    }
+      /* setSyncStatus now drives the badge — no-ops removed */
 
-    textarea.addEventListener("input", function () {
-      approach.code = textarea.value;
-      syncHighlight();
-      scheduleSave();
-    });
-    textarea.addEventListener("keydown", function (e) {
-      if (e.key === "Tab") {
-        e.preventDefault();
-        var start = textarea.selectionStart;
-        var end   = textarea.selectionEnd;
-        textarea.value = textarea.value.slice(0, start) + "    " + textarea.value.slice(end);
-        textarea.selectionStart = textarea.selectionEnd = start + 4;
-        approach.code = textarea.value;
+      /* ── SVG constants ─────────────────────────────────────── */
+      var CHECK_SVG =
+        '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.7L13 4.5"' +
+        ' stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+      var NOTE_SVG =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"' +
+        ' stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="4" y="2" width="16" height="20" rx="2"/>' +
+        '<path d="M8 6h8M8 10h8M8 14h5"/>' +
+        '</svg>';
+
+      /* External link icon (rounded square with arrow) */
+      var LINK_SVG =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' +
+        ' stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>' +
+        '<polyline points="15 3 21 3 21 9"/>' +
+        '<line x1="10" y1="14" x2="21" y2="3"/>' +
+        '</svg>';
+
+      /* ======================================================
+       * Day stepper
+       * ====================================================== */
+      function updateDayControls() {
+        document.getElementById("dayValue").textContent = state.day || "—";
+        document.getElementById("dayPrev").disabled = dayIndex <= 0;
+        document.getElementById("dayNext").disabled = dayIndex >= DAYS.length - 1;
+      }
+
+      /* ======================================================
+       * Progress bar
+       * ====================================================== */
+      function renderProgress() {
+        var total = allProblems.length;
+        var done = state.completed.size;
+        var pct = total ? Math.round(done / total * 100) : 0;
+        document.getElementById("progressFill").style.width = pct + "%";
+        document.getElementById("progressValue").textContent = done + " / " + total + " Problems";
+      }
+
+      /* ======================================================
+       * Filter
+       * ====================================================== */
+      function filteredProblems() {
+        var q = state.search.trim().toLowerCase();
+        return allProblems.filter(function (p) {
+          return p.day === state.day && (!q || p.title.toLowerCase().indexOf(q) !== -1);
+        });
+      }
+
+      /* ======================================================
+       * Multiple Java approaches per problem
+       * ------------------------------------------------------
+       * Each problem can have any number of named code blocks
+       * ("Approach 1", "Approach 2", ...). They're stored as an
+       * array under notes[problemId + ":approaches"].
+       * ====================================================== */
+
+      /* Returns the live array of approaches for a problem (mutating
+         it mutates state.notes directly, since it's the same reference).
+         Transparently migrates a problem that still has the old single
+         ":code" string from before this feature existed. */
+      function loadApproachesFor(problemId) {
+        var key = problemId + ":approaches";
+        var existing = state.notes[key];
+        if (Array.isArray(existing)) return existing;
+
+        var legacyKey = problemId + ":code";
+        var legacyCode = state.notes[legacyKey];
+        if (legacyCode && String(legacyCode).trim()) {
+          var migrated = [{ id: "a1", label: "Approach 1", code: legacyCode }];
+          state.notes[key] = migrated;
+          delete state.notes[legacyKey];
+          saveNotes();
+          return migrated;
+        }
+        return [];
+      }
+
+      /* Builds one Java code block (label input + copy + remove + editor)
+         for a single approach object { id, label, code }. */
+      function createApproachBlock(approach, onEdit, onRemove) {
+        var wrap = document.createElement("div");
+        wrap.className = "code-editor-wrap";
+
+        var header = document.createElement("div");
+        header.className = "code-editor-header";
+
+        var labelInput = document.createElement("input");
+        labelInput.className = "approach-label-input";
+        labelInput.type = "text";
+        labelInput.value = approach.label || "Approach";
+        labelInput.placeholder = "Approach name";
+        labelInput.setAttribute("aria-label", "Approach name");
+
+        var actions = document.createElement("div");
+        actions.className = "code-editor-header-actions";
+
+        var copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className = "code-copy-btn";
+        copyBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+          '<span class="copy-label">Copy</span>';
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "approach-remove-btn";
+        removeBtn.title = "Remove this approach";
+        removeBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+        actions.appendChild(copyBtn);
+        actions.appendChild(removeBtn);
+        header.appendChild(labelInput);
+        header.appendChild(actions);
+
+        var body = document.createElement("div");
+        body.className = "code-editor-body";
+        var pre = document.createElement("pre");
+        pre.className = "code-highlight";
+        pre.setAttribute("aria-hidden", "true");
+        var textarea = document.createElement("textarea");
+        textarea.className = "code-raw";
+        textarea.spellcheck = false;
+        textarea.placeholder = "// Write your Java solution here…";
+        textarea.value = approach.code || "";
+        body.appendChild(pre);
+        body.appendChild(textarea);
+
+        wrap.appendChild(header);
+        wrap.appendChild(body);
+
+        function syncHighlight() {
+          var code = textarea.value;
+          pre.innerHTML = (code ? highlightJava(code) : "") + "\n";
+        }
         syncHighlight();
-        scheduleSave();
+
+        var saveTimer;
+        function scheduleSave() {
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(onEdit, 450);
+        }
+
+        textarea.addEventListener("input", function () {
+          approach.code = textarea.value;
+          syncHighlight();
+          scheduleSave();
+        });
+        textarea.addEventListener("keydown", function (e) {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            var start = textarea.selectionStart;
+            var end = textarea.selectionEnd;
+            textarea.value = textarea.value.slice(0, start) + "    " + textarea.value.slice(end);
+            textarea.selectionStart = textarea.selectionEnd = start + 4;
+            approach.code = textarea.value;
+            syncHighlight();
+            scheduleSave();
+          }
+        });
+        textarea.addEventListener("focus", function () { wrap.classList.add("is-focused"); });
+        textarea.addEventListener("blur", function () { wrap.classList.remove("is-focused"); });
+
+        labelInput.addEventListener("input", function () {
+          approach.label = labelInput.value;
+          scheduleSave();
+        });
+
+        var copyLabelEl = copyBtn.querySelector(".copy-label");
+        copyBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          navigator.clipboard.writeText(textarea.value).then(function () {
+            if (copyLabelEl) copyLabelEl.textContent = "Copied!";
+            copyBtn.classList.add("copied");
+            setTimeout(function () {
+              if (copyLabelEl) copyLabelEl.textContent = "Copy";
+              copyBtn.classList.remove("copied");
+            }, 1500);
+          }).catch(function () { showToast("Couldn't copy to clipboard."); });
+        });
+
+        removeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          onRemove();
+        });
+
+        return wrap;
       }
-    });
-    textarea.addEventListener("focus", function () { wrap.classList.add("is-focused"); });
-    textarea.addEventListener("blur",  function () { wrap.classList.remove("is-focused"); });
 
-    labelInput.addEventListener("input", function () {
-      approach.label = labelInput.value;
-      scheduleSave();
-    });
+      /* Mounts the full "+ Add approach" UI for one problem into mountEl.
+         onNoteChange fires whenever an approach is added, edited, or removed,
+         so the caller can refresh the notes-button badge and "Saved" hint. */
+      function setupCodePane(problemId, mountEl, onNoteChange) {
+        var approaches = loadApproachesFor(problemId);
 
-    var copyLabelEl = copyBtn.querySelector(".copy-label");
-    copyBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      navigator.clipboard.writeText(textarea.value).then(function () {
-        if (copyLabelEl) copyLabelEl.textContent = "Copied!";
-        copyBtn.classList.add("copied");
-        setTimeout(function () {
-          if (copyLabelEl) copyLabelEl.textContent = "Copy";
-          copyBtn.classList.remove("copied");
-        }, 1500);
-      }).catch(function () { showToast("Couldn't copy to clipboard."); });
-    });
+        var listEl = document.createElement("div");
+        listEl.className = "approaches-list";
 
-    removeBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      onRemove();
-    });
+        var addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "add-approach-btn";
+        addBtn.innerHTML =
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+          'Add approach';
 
-    return wrap;
-  }
+        mountEl.appendChild(listEl);
+        mountEl.appendChild(addBtn);
 
-  /* Mounts the full "+ Add approach" UI for one problem into mountEl.
-     onNoteChange fires whenever an approach is added, edited, or removed,
-     so the caller can refresh the notes-button badge and "Saved" hint. */
-  function setupCodePane(problemId, mountEl, onNoteChange) {
-    var approaches = loadApproachesFor(problemId);
+        function persist() {
+          var key = problemId + ":approaches";
+          if (approaches.length) state.notes[key] = approaches;
+          else delete state.notes[key];
+          saveNotes();
+          onNoteChange();
+        }
 
-    var listEl = document.createElement("div");
-    listEl.className = "approaches-list";
+        function render() {
+          listEl.innerHTML = "";
+          approaches.forEach(function (approach, idx) {
+            var block = createApproachBlock(approach, persist, function () {
+              approaches.splice(idx, 1);
+              persist();
+              render();
+            });
+            listEl.appendChild(block);
+          });
+        }
+        render();
 
-    var addBtn = document.createElement("button");
-    addBtn.type = "button";
-    addBtn.className = "add-approach-btn";
-    addBtn.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-      'Add approach';
-
-    mountEl.appendChild(listEl);
-    mountEl.appendChild(addBtn);
-
-    function persist() {
-      var key = problemId + ":approaches";
-      if (approaches.length) state.notes[key] = approaches;
-      else delete state.notes[key];
-      dbSet(kNotes(), state.notes).catch(function () {
-        showToast("Couldn't save note.");
-      });
-      onNoteChange();
-    }
-
-    function render() {
-      listEl.innerHTML = "";
-      approaches.forEach(function (approach, idx) {
-        var block = createApproachBlock(approach, persist, function () {
-          approaches.splice(idx, 1);
+        addBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          approaches.push({
+            id: "a" + Date.now() + Math.random().toString(36).slice(2, 6),
+            label: "Approach " + (approaches.length + 1),
+            code: ""
+          });
           persist();
           render();
+          var boxes = listEl.querySelectorAll(".code-raw");
+          var last = boxes[boxes.length - 1];
+          if (last) setTimeout(function () { last.focus(); }, 50);
         });
-        listEl.appendChild(block);
-      });
-    }
-    render();
 
-    addBtn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      approaches.push({
-        id: "a" + Date.now() + Math.random().toString(36).slice(2, 6),
-        label: "Approach " + (approaches.length + 1),
-        code: ""
-      });
-      persist();
-      render();
-      var boxes = listEl.querySelectorAll(".code-raw");
-      var last = boxes[boxes.length - 1];
-      if (last) setTimeout(function () { last.focus(); }, 50);
-    });
-
-    return {
-      hasContent: function () {
-        return approaches.some(function (a) { return (a.code || "").trim().length > 0; });
+        return {
+          hasContent: function () {
+            return approaches.some(function (a) { return (a.code || "").trim().length > 0; });
+          }
+        };
       }
-    };
-  }
 
-  /* ======================================================
-   * Render list
-   * ====================================================== */
-  function renderList() {
-    var listEl = document.getElementById("list");
-    var items  = filteredProblems();
+      /* ======================================================
+       * Render list
+       * ====================================================== */
+      function renderList() {
+        var listEl = document.getElementById("list");
+        var items = filteredProblems();
 
-    if (!items.length) {
-      listEl.innerHTML =
-        '<div class="' + (state.search ? "empty-state" : "loading") + '">' +
-        (state.search ? "No problems match your search." : "No problems for this day.") +
-        '</div>';
-      return;
-    }
+        if (!items.length) {
+          listEl.innerHTML =
+            '<div class="' + (state.search ? "empty-state" : "loading") + '">' +
+            (state.search ? "No problems match your search." : "No problems for this day.") +
+            '</div>';
+          return;
+        }
 
-    listEl.innerHTML = "";
+        listEl.innerHTML = "";
 
-    items.forEach(function (p) {
-      var isDone    = state.completed.has(p.id);
-      var note      = state.notes[p.id] || "";
-      var hasNote   = note.length > 0;
-      var panelId   = "np-" + p.id.replace(/[^a-z0-9]/gi, "-");
+        items.forEach(function (p) {
+          var isDone = state.completed.has(p.id);
+          var note = state.notes[p.id] || "";
+          var hasNote = note.length > 0;
+          var panelId = "np-" + p.id.replace(/[^a-z0-9]/gi, "-");
 
-      var row = document.createElement("div");
-      row.className = "row" + (isDone ? " is-done" : "");
-      row.setAttribute("tabindex", "0");
+          var row = document.createElement("div");
+          row.className = "row" + (isDone ? " is-done" : "");
+          row.setAttribute("tabindex", "0");
 
-      row.innerHTML =
-        '<div class="row-top">' +
-          '<span class="cell-status">' +
+          row.innerHTML =
+            '<div class="row-top">' +
+            '<span class="cell-status">' +
             '<span class="check-circle">' + (isDone ? CHECK_SVG : "") + '</span>' +
-          '</span>' +
-          '<span class="cell-title">' + esc(p.title) + '</span>' +
-          '<span class="cell-target">' + esc(p.target) + '</span>' +
-          '<span class="cell-note">' +
+            '</span>' +
+            '<span class="cell-title">' + esc(p.title) +
+              (p.link ? '<a class="link-btn" href="' + esc(p.link) + '" target="_blank" rel="noopener" title="Open on LeetCode" tabindex="-1">' + LINK_SVG + '</a>' : '') +
+            '</span>' +
+            '<span class="cell-target">' + esc(p.target) + '</span>' +
+            '<span class="cell-note">' +
             '<button class="notes-btn' + (hasNote ? " has-note" : "") + '"' +
-              ' type="button"' +
-              ' title="' + (hasNote ? "Edit note" : "Add note") + '"' +
-              ' aria-expanded="false"' +
-              ' aria-controls="' + panelId + '">' +
-              NOTE_SVG +
+            ' type="button"' +
+            ' title="' + (hasNote ? "Edit note" : "Add note") + '"' +
+            ' aria-expanded="false"' +
+            ' aria-controls="' + panelId + '">' +
+            NOTE_SVG +
             '</button>' +
-          '</span>' +
-        '</div>' +
-        '<span class="cell-approach">' + esc(p.approach) + '</span>' +
-        '<div class="notes-panel" id="' + panelId + '">' +
-          /* ---- Tabs ---- */
-          '<div class="notes-tabs">' +
+            '</span>' +
+            '</div>' +
+            '<span class="cell-approach">' + esc(p.approach) + '</span>' +
+            '<div class="notes-panel" id="' + panelId + '">' +
+            /* ---- Tabs ---- */
+            '<div class="notes-tabs">' +
             '<button class="notes-tab active" data-tab="text" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
-              'Notes' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>' +
+            'Notes' +
             '</button>' +
             '<button class="notes-tab" data-tab="code" type="button">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
-              'Java' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
+            'Java' +
             '</button>' +
-          '</div>' +
-          /* ---- Plain notes pane ---- */
-          '<div class="notes-pane active" data-pane="text">' +
+            '</div>' +
+            /* ---- Plain notes pane ---- */
+            '<div class="notes-pane active" data-pane="text">' +
             '<textarea class="notes-textarea"' +
-              ' placeholder="Your notes for this problem…">' + esc(note) + '</textarea>' +
-          '</div>' +
-          /* ---- Code editor pane: built dynamically, see setupCodePane() ---- */
-          '<div class="notes-pane" data-pane="code">' +
+            ' placeholder="Your notes for this problem…">' + esc(note) + '</textarea>' +
+            '</div>' +
+            /* ---- Code editor pane: built dynamically, see setupCodePane() ---- */
+            '<div class="notes-pane" data-pane="code">' +
             '<div class="code-pane-mount"></div>' +
-          '</div>' +
-          '<div class="notes-saved"></div>' +
-        '</div>';
+            '</div>' +
+            '<div class="notes-saved"></div>' +
+            '</div>';
 
-      /* ---- Toggle completion ---- */
-      row.addEventListener("click", function (e) {
-        if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
-        toggleProblem(p);
-      });
-      row.addEventListener("keydown", function (e) {
-        if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProblem(p); }
-      });
-
-      /* ---- Notes panel toggle ---- */
-      var btn        = row.querySelector(".notes-btn");
-      var panel      = row.querySelector(".notes-panel");
-      var ta         = row.querySelector(".notes-textarea");
-      var savedEl    = row.querySelector(".notes-saved");
-      var codeMount  = row.querySelector(".code-pane-mount");
-      var tabs       = row.querySelectorAll(".notes-tab");
-      var panes      = row.querySelectorAll(".notes-pane");
-
-      function refreshNoteBadge() {
-        var filled = (state.notes[p.id] || "").trim().length > 0 || codePane.hasContent();
-        btn.classList.toggle("has-note", filled);
-        btn.title = filled ? "Edit note" : "Add note";
-      }
-
-      function flashSaved() {
-        savedEl.textContent = "Saved ✓";
-        setTimeout(function () { savedEl.textContent = ""; }, 1500);
-      }
-
-      /* Builds the "+ Add approach" list of Java code blocks for this problem. */
-      var codePane = setupCodePane(p.id, codeMount, function () {
-        refreshNoteBadge();
-        flashSaved();
-      });
-
-      btn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        var open = panel.classList.toggle("is-open");
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-        if (open) { setTimeout(function () { ta.focus(); }, 50); }
-      });
-
-      /* ---- Tab switching ---- */
-      tabs.forEach(function (tab) {
-        tab.addEventListener("click", function (e) {
-          e.stopPropagation();
-          var target = tab.getAttribute("data-tab");
-          tabs.forEach(function (t) { t.classList.toggle("active", t === tab); });
-          panes.forEach(function (pn) {
-            pn.classList.toggle("active", pn.getAttribute("data-pane") === target);
+          /* ---- Toggle completion ---- */
+          row.addEventListener("click", function (e) {
+            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
+            toggleProblem(p);
           });
-          if (target !== "code") { setTimeout(function () { ta.focus(); }, 50); }
-        });
-      });
+          row.addEventListener("keydown", function (e) {
+            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProblem(p); }
+          });
 
-      /* ---- Auto-save plain notes (debounced 500 ms) ---- */
-      var saveTimer;
-      ta.addEventListener("input", function () {
-        clearTimeout(saveTimer);
-        savedEl.textContent = "";
-        saveTimer = setTimeout(function () {
-          saveNoteFor(p.id, ta.value);
+          /* ---- Notes panel toggle ---- */
+          var btn = row.querySelector(".notes-btn");
+          var panel = row.querySelector(".notes-panel");
+          var ta = row.querySelector(".notes-textarea");
+          var savedEl = row.querySelector(".notes-saved");
+          var codeMount = row.querySelector(".code-pane-mount");
+          var tabs = row.querySelectorAll(".notes-tab");
+          var panes = row.querySelectorAll(".notes-pane");
+
+          function refreshNoteBadge() {
+            var filled = (state.notes[p.id] || "").trim().length > 0 || codePane.hasContent();
+            btn.classList.toggle("has-note", filled);
+            btn.title = filled ? "Edit note" : "Add note";
+          }
+
+          function flashSaved() {
+            savedEl.textContent = "Saved ✓";
+            setTimeout(function () { savedEl.textContent = ""; }, 1500);
+          }
+
+          /* Builds the "+ Add approach" list of Java code blocks for this problem. */
+          var codePane = setupCodePane(p.id, codeMount, function () {
+            refreshNoteBadge();
+            flashSaved();
+          });
+
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var open = panel.classList.toggle("is-open");
+            btn.setAttribute("aria-expanded", open ? "true" : "false");
+            if (open) { setTimeout(function () { ta.focus(); }, 50); }
+          });
+
+          /* ---- Tab switching ---- */
+          tabs.forEach(function (tab) {
+            tab.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var target = tab.getAttribute("data-tab");
+              tabs.forEach(function (t) { t.classList.toggle("active", t === tab); });
+              panes.forEach(function (pn) {
+                pn.classList.toggle("active", pn.getAttribute("data-pane") === target);
+              });
+              if (target !== "code") { setTimeout(function () { ta.focus(); }, 50); }
+            });
+          });
+
+          /* ---- Auto-save plain notes (debounced 500 ms) ---- */
+          var saveTimer;
+          ta.addEventListener("input", function () {
+            clearTimeout(saveTimer);
+            savedEl.textContent = "";
+            saveTimer = setTimeout(function () {
+              saveNoteFor(p.id, ta.value);
+              refreshNoteBadge();
+              flashSaved();
+            }, 500);
+          });
+
           refreshNoteBadge();
-          flashSaved();
-        }, 500);
+
+          listEl.appendChild(row);
+        });
+      }
+
+      /* ======================================================
+       * Toggle + confirmation modal
+       * ====================================================== */
+      function toggleProblem(p) {
+        if (state.completed.has(p.id)) {
+          openConfirm(p);
+        } else {
+          state.completed.add(p.id);
+          saveCompleted();
+          renderList();
+          renderProgress();
+        }
+      }
+
+      function openConfirm(p) {
+        state.pending = p;
+        document.getElementById("modalBody").textContent =
+          '"' + p.title + '" will be removed from your completed list. Are you sure?';
+        document.getElementById("modalOverlay").hidden = false;
+        document.getElementById("modalCancel").focus();
+      }
+
+      function closeConfirm() {
+        state.pending = null;
+        document.getElementById("modalOverlay").hidden = true;
+      }
+
+      function confirmRemove() {
+        var p = state.pending;
+        if (!p) { closeConfirm(); return; }
+        state.completed.delete(p.id);
+        closeConfirm();
+        saveCompleted();
+        renderList();
+        renderProgress();
+      }
+
+      /* ======================================================
+       * Wire up events
+       * ====================================================== */
+      document.getElementById("searchInput").addEventListener("input", function (e) {
+        state.search = e.target.value;
+        renderList();
+      });
+      document.getElementById("dayPrev").addEventListener("click", function () {
+        if (dayIndex > 0) { dayIndex--; state.day = DAYS[dayIndex]; updateDayControls(); renderList(); }
+      });
+      document.getElementById("dayNext").addEventListener("click", function () {
+        if (dayIndex < DAYS.length - 1) { dayIndex++; state.day = DAYS[dayIndex]; updateDayControls(); renderList(); }
+      });
+      document.getElementById("modalCancel").addEventListener("click", closeConfirm);
+      document.getElementById("modalConfirm").addEventListener("click", confirmRemove);
+      document.getElementById("modalOverlay").addEventListener("click", function (e) {
+        if (e.target.id === "modalOverlay") closeConfirm();
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !document.getElementById("modalOverlay").hidden) closeConfirm();
       });
 
-      refreshNoteBadge();
+      /* ======================================================
+       * 3. INIT — load topic data (Convex+cache), then load progress, then render
+       * ====================================================== */
+      if (!topicId) {
+        showFatalError("No topic was specified in the URL.");
+      } else {
+        loadTopicData(topicId).then(function (data) {
+          buildProblems(data);
+          document.title = (data.title || "DSA Practice") + " · DSA Practice";
+          document.getElementById("pageTitleText").textContent = data.title || "Practice";
+          updateDayControls();
+          renderList();
+          renderProgress();
+          return loadAll();
+        }).then(function () {
+          setDbStatus(true);
+          renderProgress();
+          renderList();
+        }).catch(function (err) {
+          console.error(err);
+          if (!allProblems.length) {
+            showFatalError(err.message || "Something went wrong loading this topic.");
+          } else {
+            setDbStatus(false);
+            showToast("Sync unavailable — progress may not be up to date.");
+            renderProgress();
+            renderList();
+          }
+        });
+      }
 
-      listEl.appendChild(row);
-    });
-  }
-
-  /* ======================================================
-   * Toggle + confirmation modal
-   * ====================================================== */
-  function toggleProblem(p) {
-    if (state.completed.has(p.id)) {
-      openConfirm(p);
-    } else {
-      state.completed.add(p.id);
-      saveCompleted();
-      renderList();
-      renderProgress();
-    }
-  }
-
-  function openConfirm(p) {
-    state.pending = p;
-    document.getElementById("modalBody").textContent =
-      '"' + p.title + '" will be removed from your completed list. Are you sure?';
-    document.getElementById("modalOverlay").hidden = false;
-    document.getElementById("modalCancel").focus();
-  }
-
-  function closeConfirm() {
-    state.pending = null;
-    document.getElementById("modalOverlay").hidden = true;
-  }
-
-  function confirmRemove() {
-    var p = state.pending;
-    if (!p) { closeConfirm(); return; }
-    state.completed.delete(p.id);
-    closeConfirm();
-    saveCompleted();
-    renderList();
-    renderProgress();
-  }
-
-  /* ======================================================
-   * Wire up events
-   * ====================================================== */
-  document.getElementById("searchInput").addEventListener("input", function (e) {
-    state.search = e.target.value;
-    renderList();
-  });
-  document.getElementById("dayPrev").addEventListener("click", function () {
-    if (dayIndex > 0) { dayIndex--; state.day = DAYS[dayIndex]; updateDayControls(); renderList(); }
-  });
-  document.getElementById("dayNext").addEventListener("click", function () {
-    if (dayIndex < DAYS.length - 1) { dayIndex++; state.day = DAYS[dayIndex]; updateDayControls(); renderList(); }
-  });
-  document.getElementById("modalCancel").addEventListener("click", closeConfirm);
-  document.getElementById("modalConfirm").addEventListener("click", confirmRemove);
-  document.getElementById("modalOverlay").addEventListener("click", function (e) {
-    if (e.target.id === "modalOverlay") closeConfirm();
-  });
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && !document.getElementById("modalOverlay").hidden) closeConfirm();
-  });
-
-  /* ======================================================
-   * 3. INIT — load topic data, then open IndexedDB, then render
-   * ====================================================== */
-  loadTopicScript(topicId).then(function (data) {
-    buildProblems(data);
-    document.title = (data.title || "DSA Practice") + " · DSA Practice";
-    document.getElementById("pageTitleText").textContent = data.title || "Practice";
-    updateDayControls();
-    renderList();           // show the list immediately, before storage loads
-    return openDB();
-  }).then(function (database) {
-    db = database;
-    setDbStatus(true);
-    return loadAll();
-  }).then(function () {
-    renderProgress();
-    renderList();
-  }).catch(function (err) {
-    console.error(err);
-    if (!allProblems.length) {
-      /* The topic data file itself failed to load — nothing to show. */
-      showFatalError(err.message || "Something went wrong loading this topic.");
-    } else {
-      /* Topic loaded fine, only storage failed — app still usable, just won't persist. */
-      setDbStatus(false);
-      showToast("IndexedDB unavailable — progress won't be saved.");
-      renderProgress();
-      renderList();
-    }
-  });
-
-})();
-</script>
+    })();
+  </script>
 </body>
+
 </html>
