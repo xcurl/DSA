@@ -260,7 +260,7 @@
       font-size: 13px; color: var(--text-secondary); }
     .cell-target { display: flex; flex: 0 0 auto; font-size: 13px;
       color: var(--text-secondary); white-space: nowrap; }
-    .cell-note { display: flex; flex: 0 0 auto; }
+    .cell-note { display: flex; flex: 0 0 auto; align-items: center; gap: 5px; }
 
     .notes-panel { display: none; padding: 10px 0 2px; }
     .notes-panel.is-open { display: block; }
@@ -272,20 +272,20 @@
     /* Desktop: switch to CSS grid so all 5 cells share one row */
     @media (min-width: 680px) {
       .table-header {
-        display: grid; grid-template-columns: 40px 1fr 200px 110px 52px;
+        display: grid; grid-template-columns: 40px 1fr 170px 110px 80px;
         gap: 0 16px; padding: 12px 4px; border-bottom: 1px solid var(--border);
         color: var(--text-secondary); font-size: 13px; font-weight: 600;
       }
       .row {
-        display: grid; grid-template-columns: 40px 1fr 200px 110px 52px;
+        display: grid; grid-template-columns: 40px 1fr 170px 110px 80px;
         gap: 0 16px; padding: 0;
       }
       .row-top { display: contents; }
       .cell-status   { grid-column: 1; grid-row: 1; padding: 13px 0; display: flex; align-items: center; }
       .cell-title    { grid-column: 2; grid-row: 1; padding: 13px 0; font-weight: 400; min-width: 0; display: flex; align-items: center; gap: 6px; }
-      .cell-approach { grid-column: 3; grid-row: 1; padding: 13px 0; margin-top: 0; padding-left: 0; display: flex; align-items: center; font-size: 13px; color: var(--text-secondary); }
+      .cell-approach { grid-column: 3; grid-row: 1; padding: 13px 0; margin-top: 0; padding-left: 0; margin-left: -12px; display: flex; align-items: center; font-size: 13px; color: var(--text-secondary); }
       .cell-target   { grid-column: 4; grid-row: 1; padding: 13px 0; display: flex; align-items: center; font-size: 13px; color: var(--text-secondary); }
-      .cell-note     { grid-column: 5; grid-row: 1; padding: 13px 0; display: flex; align-items: center; justify-content: center; }
+      .cell-note     { grid-column: 5; grid-row: 1; padding: 13px 0; display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
       .notes-panel   { grid-column: 1 / -1; grid-row: 2; padding: 0 4px 14px 56px; }
     }
 
@@ -344,6 +344,7 @@
     /* ---- Notes panel: tabs ---- */
     .notes-tabs {
       display: flex;
+      align-items: center;
       gap: 2px;
       margin-bottom: 10px;
       background: rgba(255, 255, 255, .04);
@@ -383,6 +384,39 @@
       color: var(--text);
     }
 
+    /* Add approach button in the tab bar */
+    .tab-add-approach-btn {
+      display: none; /* shown via JS when Java tab is active */
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(138, 180, 248, .06);
+      border: 1px dashed rgba(138, 180, 248, .3);
+      border-radius: 7px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background .15s, border-color .15s;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+
+    .tab-add-approach-btn.visible {
+      display: inline-flex;
+    }
+
+    .tab-add-approach-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .tab-add-approach-btn:hover {
+      background: rgba(138, 180, 248, .14);
+      border-color: rgba(138, 180, 248, .55);
+    }
+
     /* Plain notes textarea */
     .notes-textarea {
       width: 100%;
@@ -409,25 +443,28 @@
 
     /* ---- Java code editor ---- */
     .code-editor-wrap {
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
       overflow: hidden;
-      background: #0d1117;
+      background: #0a0a0a;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255,255,255,.04);
+      transition: border-color .2s, box-shadow .2s;
     }
 
     .code-editor-wrap.is-focused {
-      border-color: var(--accent);
+      border-color: rgba(138, 180, 248, .4);
+      box-shadow: 0 0 0 3px rgba(138, 180, 248, .07), 0 4px 24px rgba(0,0,0,.5);
     }
 
     .code-editor-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 12px;
-      background: #161b22;
-      border-bottom: 1px solid #30363d;
+      padding: 8px 14px;
+      background: linear-gradient(to bottom, #141414, #111111);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
       flex-shrink: 0;
     }
 
@@ -438,48 +475,59 @@
       flex-shrink: 0;
     }
 
+    /* Approach number dot + label */
+    .approach-label-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
     .approach-label-input {
       flex: 1 1 auto;
       min-width: 0;
       background: transparent;
       border: none;
       outline: none;
-      color: #8ab4f8;
-      font-size: 12px;
+      color: rgba(255, 255, 255, .75);
+      font-size: 11.5px;
       font-weight: 600;
       font-family: var(--mono);
-      padding: 4px 6px;
-      border-radius: 6px;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      padding: 3px 0;
+      border-radius: 0;
       margin-right: 8px;
     }
 
     .approach-label-input:focus {
-      background: rgba(255, 255, 255, .06);
       color: #e6edf3;
     }
 
     .approach-label-input::placeholder {
-      color: #6e7681;
+      color: #4a4a4a;
     }
 
     .approach-remove-btn {
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 6px;
       border: none;
       background: transparent;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, .25);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       padding: 0;
+      transition: color .15s, background .15s;
     }
 
     .approach-remove-btn svg {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       pointer-events: none;
     }
 
@@ -492,32 +540,32 @@
     .approaches-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .approaches-list:not(:empty) {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .add-approach-btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12.5px;
+      gap: 5px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--accent);
-      background: rgba(138, 180, 248, .08);
-      border: 1px dashed rgba(138, 180, 248, .35);
-      border-radius: 8px;
-      padding: 7px 14px;
+      background: rgba(138, 180, 248, .06);
+      border: 1px dashed rgba(138, 180, 248, .3);
+      border-radius: 7px;
+      padding: 5px 11px;
       cursor: pointer;
       font-family: var(--sans);
       transition: background .15s, border-color .15s;
     }
 
     .add-approach-btn svg {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
     }
 
     .add-approach-btn:hover {
@@ -529,31 +577,34 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
-      color: var(--text-secondary);
-      background: transparent;
-      border: 1px solid #30363d;
+      color: rgba(255, 255, 255, .35);
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .09);
       border-radius: 6px;
       padding: 3px 9px;
       cursor: pointer;
       font-family: var(--sans);
-      transition: color .15s, border-color .15s;
+      letter-spacing: .3px;
+      transition: color .15s, border-color .15s, background .15s;
     }
 
     .code-copy-btn svg {
-      width: 12px;
-      height: 12px;
+      width: 11px;
+      height: 11px;
     }
 
     .code-copy-btn:hover {
-      color: var(--text);
-      border-color: #8ab4f8;
+      color: rgba(255, 255, 255, .75);
+      border-color: rgba(255, 255, 255, .2);
+      background: rgba(255, 255, 255, .08);
     }
 
     .code-copy-btn.copied {
-      color: #4caf50;
-      border-color: #4caf50;
+      color: #4ade80;
+      border-color: rgba(74, 222, 128, .3);
+      background: rgba(74, 222, 128, .06);
     }
 
     /*
@@ -666,6 +717,66 @@
       display: block;
     }
 
+    /* ---- Practice count chip ---- */
+    .practice-btn {
+      display: none; /* hidden by default, shown only on done rows */
+      align-items: center;
+      justify-content: center;
+      height: 16px;
+      min-width: 16px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, .18);
+      cursor: pointer;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: rgba(255, 255, 255, .4);
+      letter-spacing: .1px;
+      transition: border-color .15s, color .15s;
+      flex-shrink: 0;
+      white-space: nowrap;
+      line-height: 1;
+    }
+
+    .row.is-done .practice-btn {
+      display: flex;
+    }
+
+    .practice-btn:hover {
+      border-color: rgba(255, 255, 255, .35);
+      color: rgba(255, 255, 255, .75);
+    }
+
+    /* ---- Practice modal ---- */
+    .practice-modal-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(138, 180, 248, .12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 0 14px;
+      color: var(--accent);
+    }
+
+    .practice-modal-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .btn-accent:hover {
+      background: #a8c8ff;
+    }
+
     /* (mobile styles now handled in the default styles above) */
 
     .loading,
@@ -711,6 +822,36 @@
       padding: 24px;
       box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
       animation: modalIn .16s ease;
+    }
+
+    /* Mobile: topic modal compact */
+    @media (max-width: 560px) {
+      .modal {
+        padding: 18px;
+        border-radius: 14px;
+        max-width: 320px;
+      }
+      .modal-title {
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+      .modal-body {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+      .btn {
+        padding: 8px 13px;
+        font-size: 12px;
+      }
+      .practice-modal-icon {
+        width: 36px;
+        height: 36px;
+        margin-bottom: 10px;
+      }
+      .practice-modal-icon svg {
+        width: 18px;
+        height: 18px;
+      }
     }
 
     @keyframes modalIn {
@@ -891,6 +1032,21 @@
     </div>
   </div>
 
+  <!-- Practice count confirmation modal -->
+  <div class="modal-overlay" id="practiceModalOverlay" hidden>
+    <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="practiceModalTitle" aria-describedby="practiceModalBody">
+      <div class="practice-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+      </div>
+      <h2 class="modal-title" id="practiceModalTitle">Log practice?</h2>
+      <p class="modal-body" id="practiceModalBody"></p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="practiceModalCancel">Cancel</button>
+        <button class="btn btn-accent" id="practiceModalConfirm">Yes, I practised!</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" hidden></div>
 
   <script>
@@ -923,7 +1079,9 @@
         search: "",
         completed: new Set(),
         notes: {},
-        pending: null
+        practiceCounts: {},
+        pending: null,
+        practicePending: null
       };
       var DAYS = [];
       var dayIndex = 0;
@@ -1106,6 +1264,7 @@
           // data is an object like { completed: "[...]", notes: "{...}" }
           var completedRaw = data["completed"];
           var notesRaw = data["notes"];
+          var practiceRaw = data["practiceCounts"];
           try {
             state.completed = new Set(completedRaw ? JSON.parse(completedRaw) : []);
           } catch (e) { state.completed = new Set(); }
@@ -1113,6 +1272,10 @@
             state.notes = notesRaw ? JSON.parse(notesRaw) : {};
             if (typeof state.notes !== "object" || Array.isArray(state.notes)) state.notes = {};
           } catch (e) { state.notes = {}; }
+          try {
+            state.practiceCounts = practiceRaw ? JSON.parse(practiceRaw) : {};
+            if (typeof state.practiceCounts !== "object" || Array.isArray(state.practiceCounts)) state.practiceCounts = {};
+          } catch (e) { state.practiceCounts = {}; }
         });
       }
 
@@ -1147,6 +1310,23 @@
           console.error("saveNotes:", err);
           setSyncStatus("error");
           showToast("Couldn't save note — check your connection.");
+        });
+      }
+
+      /** Persist practice counts to Convex (fire-and-forget). */
+      function savePracticeCounts() {
+        setSyncStatus("syncing");
+        convexMutation("progress:set", {
+          userId: USER_ID,
+          topicId: topicId,
+          field: "practiceCounts",
+          value: JSON.stringify(state.practiceCounts)
+        }).then(function () {
+          setSyncStatus("ok");
+        }).catch(function (err) {
+          console.error("savePracticeCounts:", err);
+          setSyncStatus("error");
+          showToast("Couldn't save practice count — check your connection.");
         });
       }
 
@@ -1339,6 +1519,7 @@
         '<line x1="10" y1="14" x2="21" y2="3"/>' +
         '</svg>';
 
+
       /* ======================================================
        * Day stepper
        * ====================================================== */
@@ -1510,24 +1691,18 @@
         return wrap;
       }
 
-      /* Mounts the full "+ Add approach" UI for one problem into mountEl.
-         onNoteChange fires whenever an approach is added, edited, or removed,
-         so the caller can refresh the notes-button badge and "Saved" hint. */
-      function setupCodePane(problemId, mountEl, onNoteChange) {
+      /* Mounts the full approaches UI for one problem into mountEl.
+         onNoteChange fires whenever an approach is added, edited, or removed.
+         tabAddBtn (optional): the in-tab-bar "Add approach" button — clicks
+         on it trigger the same addBtn logic. */
+      function setupCodePane(problemId, mountEl, onNoteChange, tabAddBtn) {
         var approaches = loadApproachesFor(problemId);
 
         var listEl = document.createElement("div");
         listEl.className = "approaches-list";
 
-        var addBtn = document.createElement("button");
-        addBtn.type = "button";
-        addBtn.className = "add-approach-btn";
-        addBtn.innerHTML =
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-          'Add approach';
-
         mountEl.appendChild(listEl);
-        mountEl.appendChild(addBtn);
+        /* No standalone addBtn inside the pane — the tabAddBtn in the tabs bar is used instead. */
 
         function persist() {
           var key = problemId + ":approaches";
@@ -1550,8 +1725,7 @@
         }
         render();
 
-        addBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
+        function addApproach() {
           approaches.push({
             id: "a" + Date.now() + Math.random().toString(36).slice(2, 6),
             label: "Approach " + (approaches.length + 1),
@@ -1562,7 +1736,14 @@
           var boxes = listEl.querySelectorAll(".code-raw");
           var last = boxes[boxes.length - 1];
           if (last) setTimeout(function () { last.focus(); }, 50);
-        });
+        }
+
+        if (tabAddBtn) {
+          tabAddBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            addApproach();
+          });
+        }
 
         return {
           hasContent: function () {
@@ -1593,6 +1774,7 @@
           var note = state.notes[p.id] || "";
           var hasNote = note.length > 0;
           var panelId = "np-" + p.id.replace(/[^a-z0-9]/gi, "-");
+          var practiceCount = state.practiceCounts[p.id] || 0;
 
           var row = document.createElement("div");
           row.className = "row" + (isDone ? " is-done" : "");
@@ -1608,6 +1790,9 @@
             '</span>' +
             '<span class="cell-target">' + esc(p.target) + '</span>' +
             '<span class="cell-note">' +
+            '<button class="practice-btn" type="button" title="Log a practice session (×' + practiceCount + ')" aria-label="Log practice">' +
+            (practiceCount > 0 ? '×' + practiceCount : '×0') +
+            '</button>' +
             '<button class="notes-btn' + (hasNote ? " has-note" : "") + '"' +
             ' type="button"' +
             ' title="' + (hasNote ? "Edit note" : "Add note") + '"' +
@@ -1629,6 +1814,10 @@
             '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>' +
             'Java' +
             '</button>' +
+            '<button class="tab-add-approach-btn" type="button">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+            'Add approach' +
+            '</button>' +
             '</div>' +
             /* ---- Plain notes pane ---- */
             '<div class="notes-pane active" data-pane="text">' +
@@ -1644,12 +1833,19 @@
 
           /* ---- Toggle completion ---- */
           row.addEventListener("click", function (e) {
-            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
+            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel") || e.target.closest(".practice-btn")) return;
             toggleProblem(p);
           });
           row.addEventListener("keydown", function (e) {
-            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel")) return;
+            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel") || e.target.closest(".practice-btn")) return;
             if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProblem(p); }
+          });
+
+          /* ---- Practice count button ---- */
+          var practiceBtn = row.querySelector(".practice-btn");
+          practiceBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            openPracticeConfirm(p);
           });
 
           /* ---- Notes panel toggle ---- */
@@ -1660,6 +1856,7 @@
           var codeMount = row.querySelector(".code-pane-mount");
           var tabs = row.querySelectorAll(".notes-tab");
           var panes = row.querySelectorAll(".notes-pane");
+          var tabAddBtn = row.querySelector(".tab-add-approach-btn");
 
           function refreshNoteBadge() {
             var filled = (state.notes[p.id] || "").trim().length > 0 || codePane.hasContent();
@@ -1672,11 +1869,12 @@
             setTimeout(function () { savedEl.textContent = ""; }, 1500);
           }
 
-          /* Builds the "+ Add approach" list of Java code blocks for this problem. */
+          /* Builds the approaches list of Java code blocks for this problem.
+             The tab-level "Add approach" button proxies into this list. */
           var codePane = setupCodePane(p.id, codeMount, function () {
             refreshNoteBadge();
             flashSaved();
-          });
+          }, tabAddBtn);
 
           btn.addEventListener("click", function (e) {
             e.stopPropagation();
@@ -1694,6 +1892,8 @@
               panes.forEach(function (pn) {
                 pn.classList.toggle("active", pn.getAttribute("data-pane") === target);
               });
+              /* Show/hide the tab-level add-approach button */
+              if (tabAddBtn) tabAddBtn.classList.toggle("visible", target === "code");
               if (target !== "code") { setTimeout(function () { ta.focus(); }, 50); }
             });
           });
@@ -1754,6 +1954,34 @@
       }
 
       /* ======================================================
+       * Practice count modal
+       * ====================================================== */
+      function openPracticeConfirm(p) {
+        state.practicePending = p;
+        var current = state.practiceCounts[p.id] || 0;
+        var next = current + 1;
+        document.getElementById("practiceModalBody").textContent =
+          'Have you practised "' + p.title + '"? This will be logged as practice #' + next + '. You cannot undo this.';
+        document.getElementById("practiceModalOverlay").hidden = false;
+        document.getElementById("practiceModalCancel").focus();
+      }
+
+      function closePracticeConfirm() {
+        state.practicePending = null;
+        document.getElementById("practiceModalOverlay").hidden = true;
+      }
+
+      function confirmPractice() {
+        var p = state.practicePending;
+        if (!p) { closePracticeConfirm(); return; }
+        state.practiceCounts[p.id] = (state.practiceCounts[p.id] || 0) + 1;
+        closePracticeConfirm();
+        savePracticeCounts();
+        renderList();
+        showToast("Practice #" + state.practiceCounts[p.id] + " logged for \"" + p.title + "\"! 🎯");
+      }
+
+      /* ======================================================
        * Wire up events
        * ====================================================== */
       document.getElementById("searchInput").addEventListener("input", function (e) {
@@ -1771,8 +1999,16 @@
       document.getElementById("modalOverlay").addEventListener("click", function (e) {
         if (e.target.id === "modalOverlay") closeConfirm();
       });
+      document.getElementById("practiceModalCancel").addEventListener("click", closePracticeConfirm);
+      document.getElementById("practiceModalConfirm").addEventListener("click", confirmPractice);
+      document.getElementById("practiceModalOverlay").addEventListener("click", function (e) {
+        if (e.target.id === "practiceModalOverlay") closePracticeConfirm();
+      });
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && !document.getElementById("modalOverlay").hidden) closeConfirm();
+        if (e.key === "Escape") {
+          if (!document.getElementById("modalOverlay").hidden) closeConfirm();
+          if (!document.getElementById("practiceModalOverlay").hidden) closePracticeConfirm();
+        }
       });
 
       /* ======================================================
