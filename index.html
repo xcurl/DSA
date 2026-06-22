@@ -1,624 +1,1233 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DSA Practice</title>
-<style>
-  :root {
-    --bg: #000000;
-    --surface-2: #141414;
-    --surface-2-hover: #1f1f1f;
-    --border: #262626;
-    --text: #f5f5f5;
-    --text-secondary: #9a9a9a;
-    --accent: #8ab4f8;
-    --danger: #f04438;
-    --danger-hover: #d93c30;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
-    font-family: var(--sans); -webkit-font-smoothing: antialiased;
-  }
-  .app { max-width: 720px; margin: 0 auto; padding: 56px 28px 80px; }
-  @media (max-width: 560px) { .app { padding: 36px 16px 60px; } }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Practice</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --surface-2: #141414;
+      --surface-2-hover: #1f1f1f;
+      --border: #262626;
+      --text: #f5f5f5;
+      --text-secondary: #9a9a9a;
+      --accent: #8ab4f8;
+      --danger: #f04438;
+      --danger-hover: #d93c30;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
 
-  /* ---- Header ---- */
-  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; gap: 12px; }
-  .title { font-size: 32px; font-weight: 600; letter-spacing: -0.01em; margin: 0; color: #fff; }
-  @media (max-width: 480px) { .title { font-size: 26px; } }
-  .subtitle { font-size: 14px; color: var(--text-secondary); margin: 0 0 28px; }
+    * {
+      box-sizing: border-box;
+    }
 
-  /* ---- Add button ---- */
-  .add-btn {
-    display: inline-flex; align-items: center; gap: 7px;
-    font-size: 13px; font-weight: 600; font-family: var(--sans);
-    color: var(--accent); background: rgba(138,180,248,0.1);
-    border: 1px solid rgba(138,180,248,0.25); border-radius: 10px;
-    padding: 8px 14px; cursor: pointer; flex-shrink: 0;
-    transition: background .15s, border-color .15s; white-space: nowrap;
-  }
-  .add-btn:hover { background: rgba(138,180,248,0.18); border-color: rgba(138,180,248,0.45); }
-  .add-btn svg { width: 14px; height: 14px; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* ---- Topic cards ---- */
-  .topic-list { display: flex; flex-direction: column; gap: 10px; }
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 56px 28px 80px;
+    }
 
-  /* ---- action buttons inside card ---- */
-  .card-actions {
-    display: flex; gap: 4px; align-items: center; flex: 0 0 auto;
-    opacity: 0; transition: opacity .15s;
-  }
-  .topic-card:hover .card-actions { opacity: 1; }
-  @media (hover: none) { .card-actions { opacity: 1; } }
+    @media (max-width: 560px) {
+      .app {
+        padding: 36px 16px 60px;
+      }
+    }
 
-  .card-action-btn {
-    width: 28px; height: 28px; border-radius: 7px; border: none;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; padding: 0; transition: background .15s, color .15s;
-    background: transparent;
-  }
-  .card-action-btn svg { width: 14px; height: 14px; pointer-events: none; }
-  .card-action-edit  { color: var(--text-secondary); }
-  .card-action-edit:hover  { background: rgba(138,180,248,.15); color: var(--accent); }
-  .card-action-delete { color: var(--text-secondary); }
-  .card-action-delete:hover { background: rgba(240,68,56,.15); color: var(--danger); }
+    /* ---- Header ---- */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 12px;
+    }
 
-  .topic-card {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px 18px; text-decoration: none; color: var(--text);
-    transition: background .15s, border-color .15s;
-  }
+    .title {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 0;
+      color: #fff;
+    }
 
-  .topic-icon {
-    flex: 0 0 36px; width: 36px; height: 36px; border-radius: 10px;
-    background: rgba(138,180,248,0.12); color: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .topic-icon svg { width: 18px; height: 18px; }
-  .topic-main { flex: 1 1 auto; min-width: 0; }
-  .topic-name { font-size: 15px; font-weight: 600; margin: 0 0 2px; }
-  .topic-desc { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
-  .topic-arrow { flex: 0 0 auto; color: var(--text-secondary); }
-  .topic-arrow svg { width: 16px; height: 16px; }
-  .topic-card.is-placeholder { opacity: .45; cursor: default; }
-  .topic-list-empty { font-size: 14px; color: var(--text-secondary); padding: 16px 0; }
+    @media (max-width: 480px) {
+      .title {
+        font-size: 26px;
+      }
+    }
 
-  /* Skeleton */
-  .skeleton { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
-  .skeleton-line { height: 14px; border-radius: 6px; background: rgba(255,255,255,.07); margin-bottom: 8px; }
-  .skeleton-line:last-child { margin-bottom: 0; width: 60%; }
-  @keyframes skeleton-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-  .skeleton { animation: skeleton-pulse 1.4s ease-in-out infinite; }
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin: 0 0 28px;
+    }
 
-  /* ================================================================
-   * MODALS (shared)
+    /* ---- Add button ---- */
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--sans);
+      color: var(--accent);
+      background: rgba(138, 180, 248, 0.1);
+      border: 1px solid rgba(138, 180, 248, 0.25);
+      border-radius: 10px;
+      padding: 8px 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      background: rgba(138, 180, 248, 0.18);
+      border-color: rgba(138, 180, 248, 0.45);
+    }
+
+    .add-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ---- Topic cards ---- */
+    .topic-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ---- action buttons inside card ---- */
+    .card-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      flex: 0 0 auto;
+      opacity: 0;
+      transition: opacity .15s;
+    }
+
+    .topic-card:hover .card-actions {
+      opacity: 1;
+    }
+
+    @media (hover: none) {
+      .card-actions {
+        opacity: 1;
+      }
+    }
+
+    .card-action-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: background .15s, color .15s;
+      background: transparent;
+    }
+
+    .card-action-btn svg {
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+    }
+
+    .card-action-edit {
+      color: var(--text-secondary);
+    }
+
+    .card-action-edit:hover {
+      background: rgba(138, 180, 248, .15);
+      color: var(--accent);
+    }
+
+    .card-action-delete {
+      color: var(--text-secondary);
+    }
+
+    .card-action-delete:hover {
+      background: rgba(240, 68, 56, .15);
+      color: var(--danger);
+    }
+
+    .topic-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: var(--text);
+      transition: background .15s, border-color .15s;
+    }
+
+    .topic-icon {
+      flex: 0 0 36px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(138, 180, 248, 0.12);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topic-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .topic-main {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .topic-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+
+    .topic-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .topic-arrow {
+      flex: 0 0 auto;
+      color: var(--text-secondary);
+    }
+
+    .topic-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .topic-card.is-placeholder {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .topic-list-empty {
+      font-size: 14px;
+      color: var(--text-secondary);
+      padding: 16px 0;
+    }
+
+    /* Skeleton */
+    .skeleton {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, .07);
+      margin-bottom: 8px;
+    }
+
+    .skeleton-line:last-child {
+      margin-bottom: 0;
+      width: 60%;
+    }
+
+    @keyframes skeleton-pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    .skeleton {
+      animation: skeleton-pulse 1.4s ease-in-out infinite;
+    }
+
+    /* ================================================================
+   * MODALS
    * ================================================================ */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 50;
-    background: rgba(0,0,0,.75);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px; overflow-y: auto;
-  }
-  .modal-overlay[hidden] { display: none; }
 
-  .modal {
-    background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 20px; width: 100%; max-width: 560px;
-    padding: 28px 28px 24px;
-    box-shadow: 0 24px 80px rgba(0,0,0,.7);
-    animation: modal-in .18s ease;
-  }
-  @media (max-width: 560px) { .modal { padding: 22px 18px 20px; border-radius: 16px; } }
-  @keyframes modal-in { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, .85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
 
-  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; gap: 12px; }
-  .modal-title { margin: 0; font-size: 18px; font-weight: 600; color: #fff; }
-  .modal-close {
-    width: 30px; height: 30px; border-radius: 8px; border: none; background: transparent;
-    color: var(--text-secondary); cursor: pointer; font-size: 20px; line-height: 1;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    transition: background .15s, color .15s; padding: 0; font-family: var(--sans);
-  }
-  .modal-close:hover { background: rgba(255,255,255,.08); color: var(--text); }
+    .modal-overlay[hidden] {
+      display: none !important;
+    }
 
-  /* Form */
-  .form-row { margin-bottom: 16px; }
-  .form-label {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 12px; font-weight: 600; color: var(--text-secondary);
-    margin-bottom: 6px; letter-spacing: .05em; text-transform: uppercase;
-  }
-  .form-input, .form-select, .form-textarea {
-    width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--border);
-    border-radius: 10px; color: var(--text); font-family: var(--sans); font-size: 14px;
-    padding: 10px 14px; outline: none; transition: border-color .15s;
-  }
-  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
-  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-secondary); }
-  .form-select { appearance: none; cursor: pointer; }
-  .form-select option { background: #1a1a1a; }
-  .form-textarea { resize: vertical; min-height: 200px; font-family: var(--mono); font-size: 12.5px; line-height: 1.65; }
+    .modal {
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 560px;
+      padding: 28px 28px 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .9);
+      animation: modal-in .2s ease;
+    }
 
-  .form-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-  @media (max-width: 480px) { .form-cols { grid-template-columns: 1fr; } }
+    @keyframes modal-in {
+      from {
+        opacity: 0;
+        transform: scale(.96)
+      }
 
-  .form-hint { font-size: 11.5px; color: var(--text-secondary); margin-top: 5px; line-height: 1.5; }
-  .form-hint code { font-family: var(--mono); background: rgba(255,255,255,.07); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
 
-  .form-error {
-    font-size: 12.5px; color: #f88; background: rgba(240,68,56,.1);
-    border: 1px solid rgba(240,68,56,.25); border-radius: 8px;
-    padding: 8px 12px; margin-top: 8px; display: none;
-  }
-  .form-error.visible { display: block; }
+    /* ---- Shared: header, form, buttons ---- */
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 22px;
+      gap: 12px;
+    }
 
-  /* Copy template button */
-  .copy-template-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 11.5px; font-weight: 600; font-family: var(--sans);
-    color: var(--accent); background: rgba(138,180,248,.08);
-    border: 1px solid rgba(138,180,248,.2); border-radius: 7px;
-    padding: 4px 9px; cursor: pointer; transition: background .15s;
-  }
-  .copy-template-btn:hover { background: rgba(138,180,248,.16); }
-  .copy-template-btn.copied { color: #4caf50; border-color: rgba(76,175,80,.3); background: rgba(76,175,80,.08); }
-  .copy-template-btn svg { width: 11px; height: 11px; }
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
 
-  /* Modal actions */
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
-  .btn {
-    border: none; border-radius: 10px; padding: 10px 18px;
-    font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--sans);
-    transition: background .15s;
-  }
-  .btn-secondary { background: rgba(255,255,255,.08); color: var(--text); }
-  .btn-secondary:hover { background: rgba(255,255,255,.13); }
-  .btn-primary { background: var(--accent); color: #000; }
-  .btn-primary:hover { background: #a8c8ff; }
-  .btn-primary:disabled { opacity:.5; cursor:default; }
+    .modal-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .15s, color .15s;
+      padding: 0;
+      font-family: var(--sans);
+    }
 
-  /* Delete confirm modal (smaller) */
-  .modal.is-confirm { max-width: 360px; }
-  .confirm-body { font-size: 14px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 22px; }
-  .confirm-name { color: var(--text); font-weight: 600; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-danger:hover { background: var(--danger-hover); }
-  .btn-danger:disabled { opacity:.5; cursor:default; }
-</style>
+    .modal-close:hover {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+    }
+
+    .form-row {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .form-select {
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .form-select option {
+      background: #111;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 200px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+
+    .form-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .form-cols {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-hint {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+
+    .form-hint code {
+      font-family: var(--mono);
+      background: rgba(255, 255, 255, .07);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .form-error {
+      font-size: 12.5px;
+      color: #f88;
+      background: rgba(240, 68, 56, .1);
+      border: 1px solid rgba(240, 68, 56, .25);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .form-error.visible {
+      display: block;
+    }
+
+    .copy-template-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: var(--sans);
+      color: var(--accent);
+      background: rgba(138, 180, 248, .08);
+      border: 1px solid rgba(138, 180, 248, .2);
+      border-radius: 7px;
+      padding: 4px 9px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .copy-template-btn:hover {
+      background: rgba(138, 180, 248, .16);
+    }
+
+    .copy-template-btn.copied {
+      color: #4caf50;
+      border-color: rgba(76, 175, 80, .3);
+      background: rgba(76, 175, 80, .08);
+    }
+
+    .copy-template-btn svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+      transition: background .15s;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, .13);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #a8c8ff;
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+
+    .modal.is-confirm {
+      max-width: 360px;
+    }
+
+    .confirm-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+
+    .confirm-name {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .btn-danger:disabled {
+      opacity: .5;
+      cursor: default;
+    }
+
+    /* Desktop: mobile action bar hidden */
+    .modal-actions-mobile {
+      display: none;
+    }
+
+    /* ── Mobile only: radial clip-path reveal, full-screen black ── */
+    @media (max-width: 600px) {
+      .modal-overlay {
+        padding: 0;
+        align-items: flex-start;
+        background: #000;
+        clip-path: circle(0% at var(--ox, 50%) var(--oy, 100%));
+        transition: none;
+        pointer-events: none;
+      }
+
+      .modal-overlay[hidden] {
+        display: flex !important;
+      }
+
+      .modal-overlay.is-open {
+        clip-path: circle(170% at var(--ox, 50%) var(--oy, 100%));
+        transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        pointer-events: auto;
+      }
+
+      .modal-overlay.is-closing {
+        clip-path: circle(0% at var(--ox, 50%) var(--oy, 100%));
+        transition: clip-path 0.28s cubic-bezier(0.4, 0, 1, 1);
+        pointer-events: none;
+      }
+
+      .modal {
+        width: 100%;
+        min-height: 100dvh;
+        max-width: 100%;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        background: #000;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        animation: none;
+        opacity: 0;
+        transition: opacity 0.25s ease 0.15s;
+      }
+
+      .modal-overlay.is-open .modal {
+        opacity: 1;
+      }
+
+      .modal-overlay.is-closing .modal {
+        opacity: 0;
+        transition: opacity 0.28s ease;
+      }
+
+      .modal-inner {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 20px 18px 16px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .modal-header {
+        margin-bottom: 20px;
+        padding-top: 6px;
+      }
+
+      .modal-title {
+        font-size: 17px;
+      }
+
+      .modal-close {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+      }
+
+      /* Sticky bottom action bar on mobile */
+      .modal-actions-mobile {
+        display: flex;
+        flex-shrink: 0;
+        gap: 10px;
+        padding: 12px 18px 32px;
+        background: #000;
+        border-top: 1px solid rgba(255, 255, 255, .07);
+      }
+
+      .modal-actions-mobile .btn {
+        flex: 1;
+        text-align: center;
+        padding: 13px 0;
+        border-radius: 12px;
+        font-size: 14px;
+      }
+
+      /* Hide desktop bar on mobile */
+      .modal-actions-desktop {
+        display: none !important;
+      }
+
+      .form-row {
+        margin-bottom: 18px;
+      }
+
+      .form-label {
+        font-size: 10.5px;
+        margin-bottom: 7px;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        font-size: 14px;
+        padding: 11px 13px;
+        border-radius: 10px;
+      }
+
+      .form-textarea {
+        min-height: 160px;
+        font-size: 12px;
+      }
+
+      .form-cols {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .form-hint {
+        font-size: 11px;
+      }
+
+      .form-hint code {
+        font-size: 10.5px;
+      }
+
+      .copy-template-btn {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+
+      .form-error {
+        font-size: 11.5px;
+        padding: 8px 11px;
+      }
+
+      .confirm-body {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+    }
+  </style>
 </head>
-<body>
-<div class="app">
-  <div class="header">
-    <div>
-      <h1 class="title">DSA Practice</h1>
-    </div>
-    <button class="add-btn" id="openAddTopic" type="button">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-      Add Topic
-    </button>
-  </div>
-  <p class="subtitle">Pick a topic to start solving.</p>
-  <div class="topic-list" id="topicList">
-    <div class="skeleton"><div class="skeleton-line"></div><div class="skeleton-line"></div></div>
-    <div class="skeleton"><div class="skeleton-line"></div><div class="skeleton-line"></div></div>
-    <div class="skeleton"><div class="skeleton-line"></div><div class="skeleton-line"></div></div>
-  </div>
-</div>
 
-<!-- ================================================================
+<body>
+  <div class="app">
+    <div class="header">
+      <div>
+        <h1 class="title">DSA Practice</h1>
+      </div>
+      <button class="add-btn" id="openAddTopic" type="button">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+        Add Topic
+      </button>
+    </div>
+    <p class="subtitle">Pick a topic to start solving.</p>
+    <div class="topic-list" id="topicList">
+      <div class="skeleton">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="skeleton">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="skeleton">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
      ADD / EDIT TOPIC MODAL
      ================================================================ -->
-<div class="modal-overlay" id="addTopicOverlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-header">
-      <h2 class="modal-title" id="modalTitle">Add New Topic</h2>
-      <button class="modal-close" id="closeModal" type="button" aria-label="Close">&times;</button>
-    </div>
+  <div class="modal-overlay" id="addTopicOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-inner">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Add New Topic</h2>
+          <button class="modal-close" id="closeModal" type="button" aria-label="Close">&times;</button>
+        </div>
 
-    <div class="form-cols">
-      <div>
-        <label class="form-label" for="fieldName">Topic Name</label>
-        <input class="form-input" id="fieldName" type="text" placeholder="e.g. Binary Search" autocomplete="off"/>
+        <div class="form-cols">
+          <div>
+            <label class="form-label" for="fieldName">Topic Name</label>
+            <input class="form-input" id="fieldName" type="text" placeholder="e.g. Binary Search" autocomplete="off" />
+          </div>
+          <div>
+            <label class="form-label" for="fieldId">Topic ID</label>
+            <input class="form-input" id="fieldId" type="text" placeholder="e.g. binary-search" autocomplete="off" />
+            <p class="form-hint">Lowercase, hyphens only</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="fieldDesc">Description</label>
+          <input class="form-input" id="fieldDesc" type="text" placeholder="Short description…" autocomplete="off" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="fieldIcon">Icon</label>
+          <select class="form-select" id="fieldIcon">
+            <option value="list">List (default)</option>
+            <option value="link">Link</option>
+            <option value="tree">Tree</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label" for="fieldJson">
+            <span>Days &amp; Problems (JSON)</span>
+            <button class="copy-template-btn" id="copyTemplate" type="button">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
+              </svg>
+              Copy template
+            </button>
+          </label>
+          <textarea class="form-textarea" id="fieldJson" spellcheck="false"></textarea>
+          <div class="form-error" id="jsonError"></div>
+          <p class="form-hint">Array of day objects. Each problem needs <code>title</code>, <code>approach</code>,
+            <code>target</code> and optional <code>link</code>.</p>
+        </div>
+
+        <!-- Desktop actions (inside scroll area) -->
+        <div class="modal-actions modal-actions-desktop">
+          <button class="btn btn-secondary" id="cancelModal" type="button">Cancel</button>
+          <button class="btn btn-primary" id="submitModal" type="button">Save Topic</button>
+        </div>
       </div>
-      <div>
-        <label class="form-label" for="fieldId">Topic ID</label>
-        <input class="form-input" id="fieldId" type="text" placeholder="e.g. binary-search" autocomplete="off"/>
-        <p class="form-hint">Lowercase, hyphens only</p>
+
+      <!-- Mobile sticky action bar (outside scroll area) -->
+      <div class="modal-actions modal-actions-mobile" aria-hidden="true">
+        <button class="btn btn-secondary" id="cancelModalMobile" type="button">Cancel</button>
+        <button class="btn btn-primary" id="submitModalMobile" type="button">Save Topic</button>
       </div>
-    </div>
-
-    <div class="form-row">
-      <label class="form-label" for="fieldDesc">Description</label>
-      <input class="form-input" id="fieldDesc" type="text" placeholder="Short description…" autocomplete="off"/>
-    </div>
-
-    <div class="form-row">
-      <label class="form-label" for="fieldIcon">Icon</label>
-      <select class="form-select" id="fieldIcon">
-        <option value="list">List (default)</option>
-        <option value="link">Link</option>
-        <option value="tree">Tree</option>
-      </select>
-    </div>
-
-    <div class="form-row">
-      <label class="form-label" for="fieldJson">
-        <span>Days &amp; Problems (JSON)</span>
-        <button class="copy-template-btn" id="copyTemplate" type="button">
-          <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Copy template
-        </button>
-      </label>
-      <textarea class="form-textarea" id="fieldJson" spellcheck="false"></textarea>
-      <div class="form-error" id="jsonError"></div>
-      <p class="form-hint">Array of day objects. Each problem needs <code>title</code>, <code>approach</code>, <code>target</code> and optional <code>link</code>.</p>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="cancelModal" type="button">Cancel</button>
-      <button class="btn btn-primary" id="submitModal" type="button">Save Topic</button>
     </div>
   </div>
-</div>
 
-<!-- ================================================================
+  <!-- ================================================================
      DELETE CONFIRM MODAL
      ================================================================ -->
-<div class="modal-overlay" id="deleteOverlay" hidden>
-  <div class="modal is-confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="modal-header">
-      <h2 class="modal-title" id="confirmTitle">Delete Topic?</h2>
-      <button class="modal-close" id="closeConfirm" type="button" aria-label="Close">&times;</button>
-    </div>
-    <p class="confirm-body">
-      This will permanently delete <span class="confirm-name" id="confirmName"></span> and all its problems &amp; progress. This cannot be undone.
-    </p>
-    <div class="modal-actions">
-      <button class="btn btn-secondary" id="cancelConfirm" type="button">Cancel</button>
-      <button class="btn btn-danger" id="confirmDelete" type="button">Delete</button>
+  <div class="modal-overlay" id="deleteOverlay" hidden>
+    <div class="modal is-confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-header">
+        <h2 class="modal-title" id="confirmTitle">Delete Topic?</h2>
+        <button class="modal-close" id="closeConfirm" type="button" aria-label="Close">&times;</button>
+      </div>
+      <p class="confirm-body">
+        This will permanently delete <span class="confirm-name" id="confirmName"></span> and all its problems &amp;
+        progress. This cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelConfirm" type="button">Cancel</button>
+        <button class="btn btn-danger" id="confirmDelete" type="button">Delete</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script>
-(function () {
-  "use strict";
+  <script>
+    (function () {
+      "use strict";
 
-  var CONVEX_URL = "https://agreeable-impala-393.convex.cloud";
+      var CONVEX_URL = "https://agreeable-impala-393.convex.cloud";
 
-  var ICONS = {
-    list: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
-    link: '<svg viewBox="0 0 24 24" fill="none"><path d="M10 14a4 4 0 005.66 0l2.83-2.83a4 4 0 00-5.66-5.66L11 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 10a4 4 0 00-5.66 0L5.5 12.83a4 4 0 005.66 5.66L13 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    tree: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><path d="M12 7.2V11M9.3 13.2L11 11M14.7 13.2L13 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
-  };
-  var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var EDIT_SVG  = '<svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2"/></svg>';
+      var ICONS = {
+        list: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+        link: '<svg viewBox="0 0 24 24" fill="none"><path d="M10 14a4 4 0 005.66 0l2.83-2.83a4 4 0 00-5.66-5.66L11 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 10a4 4 0 00-5.66 0L5.5 12.83a4 4 0 005.66 5.66L13 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        tree: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="15" r="2.2" stroke="currentColor" stroke-width="2"/><path d="M12 7.2V11M9.3 13.2L11 11M14.7 13.2L13 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      };
+      var ARROW_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var EDIT_SVG = '<svg viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var TRASH_SVG = '<svg viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2"/></svg>';
 
-  var CACHE_KEY = "dsa-index-topics";
-  var CACHE_TTL = 5 * 60 * 1000;
+      var CACHE_KEY = "dsa-index-topics";
+      var CACHE_TTL = 5 * 60 * 1000;
 
-  var JSON_TEMPLATE = JSON.stringify([
-    {
-      name: "Easy",
-      problems: [
-        { title: "Problem Name", approach: "Two Pointers", target: "Google, Meta", link: "https://leetcode.com/problems/..." }
-      ]
-    },
-    {
-      name: "Medium",
-      problems: [
-        { title: "Problem Name", approach: "BFS", target: "Amazon, Apple" }
-      ]
-    },
-    {
-      name: "Hard",
-      problems: [
-        { title: "Problem Name", approach: "DP (2D Table)", target: "Google" }
-      ]
-    }
-  ], null, 2);
+      var JSON_TEMPLATE = JSON.stringify([
+        {
+          name: "Easy",
+          problems: [
+            { title: "Problem Name", approach: "Two Pointers", target: "Google, Meta", link: "https://leetcode.com/problems/..." }
+          ]
+        },
+        {
+          name: "Medium",
+          problems: [
+            { title: "Problem Name", approach: "BFS", target: "Amazon, Apple" }
+          ]
+        },
+        {
+          name: "Hard",
+          problems: [
+            { title: "Problem Name", approach: "DP (2D Table)", target: "Google" }
+          ]
+        }
+      ], null, 2);
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, function(c){
-      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
-    });
-  }
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
 
-  /* ---- Convex ---- */
-  function convexQuery(path, args) {
-    return fetch(CONVEX_URL + "/api/query", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: path, args: args || {}, format: "json" })
-    }).then(function(r){ return r.json(); })
-      .then(function(j){
-        if (j.status === "success") return j.value;
-        throw new Error(j.errorMessage || "Query failed");
-      });
-  }
-  function convexMutation(path, args) {
-    return fetch(CONVEX_URL + "/api/mutation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: path, args: args || {}, format: "json" })
-    }).then(function(r){ return r.json(); })
-      .then(function(j){
-        if (j.status === "success") return j.value;
-        throw new Error(j.errorMessage || "Mutation failed");
-      });
-  }
+      /* ---- Convex ---- */
+      function convexQuery(path, args) {
+        return fetch(CONVEX_URL + "/api/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: path, args: args || {}, format: "json" })
+        }).then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j.status === "success") return j.value;
+            throw new Error(j.errorMessage || "Query failed");
+          });
+      }
+      function convexMutation(path, args) {
+        return fetch(CONVEX_URL + "/api/mutation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: path, args: args || {}, format: "json" })
+        }).then(function (r) { return r.json(); })
+          .then(function (j) {
+            if (j.status === "success") return j.value;
+            throw new Error(j.errorMessage || "Mutation failed");
+          });
+      }
 
-  /* ---- Cache ---- */
-  function getCache() {
-    try {
-      var raw = localStorage.getItem(CACHE_KEY);
-      if (!raw) return null;
-      var obj = JSON.parse(raw);
-      if (Date.now() - obj.ts > CACHE_TTL) return null;
-      return obj.data;
-    } catch(e){ return null; }
-  }
-  function setCache(data) {
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), data: data})); } catch(e){}
-  }
-  function clearCache() {
-    try { localStorage.removeItem(CACHE_KEY); } catch(e){}
-  }
+      /* ---- Cache ---- */
+      function getCache() {
+        try {
+          var raw = localStorage.getItem(CACHE_KEY);
+          if (!raw) return null;
+          var obj = JSON.parse(raw);
+          if (Date.now() - obj.ts > CACHE_TTL) return null;
+          return obj.data;
+        } catch (e) { return null; }
+      }
+      function setCache(data) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) { }
+      }
+      function clearCache() {
+        try { localStorage.removeItem(CACHE_KEY); } catch (e) { }
+      }
 
-  /* ---- Topic list ---- */
-  var listEl = document.getElementById("topicList");
-  var _topics = [];
+      /* ---- Topic list ---- */
+      var listEl = document.getElementById("topicList");
+      var _topics = [];
 
-  function renderTopics(topics) {
-    _topics = topics || [];
-    if (!_topics.length) {
-      listEl.innerHTML = '<p class="topic-list-empty">No topics yet — click "Add Topic" to get started.</p>';
-      return;
-    }
-    var html = "";
-    _topics.forEach(function(t) {
-      var icon = ICONS[t.icon] || ICONS.list;
-      var actionBtns =
-        '<span class="card-actions">' +
-          '<button class="card-action-btn card-action-edit" data-id="' + esc(t.topicId) + '" data-action="edit" title="Edit topic" type="button">' + EDIT_SVG + '</button>' +
-          '<button class="card-action-btn card-action-delete" data-id="' + esc(t.topicId) + '" data-action="delete" title="Delete topic" type="button">' + TRASH_SVG + '</button>' +
-        '</span>';
+      function renderTopics(topics) {
+        _topics = topics || [];
+        if (!_topics.length) {
+          listEl.innerHTML = '<p class="topic-list-empty">No topics yet — click "Add Topic" to get started.</p>';
+          return;
+        }
+        var html = "";
+        _topics.forEach(function (t) {
+          var icon = ICONS[t.icon] || ICONS.list;
+          var actionBtns =
+            '<span class="card-actions">' +
+            '<button class="card-action-btn card-action-edit" data-id="' + esc(t.topicId) + '" data-action="edit" title="Edit topic" type="button">' + EDIT_SVG + '</button>' +
+            '<button class="card-action-btn card-action-delete" data-id="' + esc(t.topicId) + '" data-action="delete" title="Delete topic" type="button">' + TRASH_SVG + '</button>' +
+            '</span>';
 
-      if (t.ready) {
-        html +=
-          '<a class="topic-card" href="template.html?topic=' + encodeURIComponent(t.topicId) + '">' +
-            '<span class="topic-icon">' + icon + '</span>' +
-            '<span class="topic-main">' +
+          if (t.ready) {
+            html +=
+              '<a class="topic-card" href="template.html?topic=' + encodeURIComponent(t.topicId) + '">' +
+              '<span class="topic-icon">' + icon + '</span>' +
+              '<span class="topic-main">' +
               '<p class="topic-name">' + esc(t.name) + '</p>' +
               '<p class="topic-desc">' + esc(t.desc) + '</p>' +
-            '</span>' +
-            actionBtns +
-            '<span class="topic-arrow">' + ARROW_SVG + '</span>' +
-          '</a>';
-      } else {
-        html +=
-          '<span class="topic-card is-placeholder">' +
-            '<span class="topic-icon">' + icon + '</span>' +
-            '<span class="topic-main">' +
+              '</span>' +
+              actionBtns +
+              '<span class="topic-arrow">' + ARROW_SVG + '</span>' +
+              '</a>';
+          } else {
+            html +=
+              '<span class="topic-card is-placeholder">' +
+              '<span class="topic-icon">' + icon + '</span>' +
+              '<span class="topic-main">' +
               '<p class="topic-name">' + esc(t.name) + '</p>' +
               '<p class="topic-desc">' + esc(t.desc) + ' · coming soon</p>' +
-            '</span>' +
-            actionBtns +
-          '</span>';
-      }
-    });
-    listEl.innerHTML = html;
+              '</span>' +
+              actionBtns +
+              '</span>';
+          }
+        });
+        listEl.innerHTML = html;
 
-    /* Attach action button listeners */
-    listEl.querySelectorAll("[data-action]").forEach(function(btn) {
-      btn.addEventListener("click", function(e) {
-        e.preventDefault(); e.stopPropagation();
-        var id = btn.getAttribute("data-id");
-        var action = btn.getAttribute("data-action");
-        if (action === "edit")   openEditModal(id);
-        if (action === "delete") openDeleteConfirm(id);
-      });
-    });
-  }
-
-  /* Load */
-  var cached = getCache();
-  if (cached) renderTopics(cached);
-  convexQuery("topics:list", {}).then(function(topics) {
-    setCache(topics); renderTopics(topics);
-  }).catch(function() {
-    if (!cached) listEl.innerHTML = '<p class="topic-list-empty">Couldn\'t load topics — check your connection.</p>';
-  });
-
-  /* ================================================================
-   * ADD / EDIT MODAL
-   * ================================================================ */
-  var overlay    = document.getElementById("addTopicOverlay");
-  var modalTitle = document.getElementById("modalTitle");
-  var nameEl     = document.getElementById("fieldName");
-  var idEl       = document.getElementById("fieldId");
-  var descEl     = document.getElementById("fieldDesc");
-  var iconEl     = document.getElementById("fieldIcon");
-  var jsonEl     = document.getElementById("fieldJson");
-  var errEl      = document.getElementById("jsonError");
-  var submitEl   = document.getElementById("submitModal");
-
-  var _editMode  = false;   // false = add, true = edit
-  var _editTopicId = "";
-
-  function openAddModal() {
-    _editMode = false; _editTopicId = "";
-    modalTitle.textContent = "Add New Topic";
-    nameEl.value = ""; idEl.value = ""; descEl.value = "";
-    iconEl.value = "list"; jsonEl.value = "";
-    idEl._userEdited = false;
-    errEl.classList.remove("visible");
-    submitEl.disabled = false; submitEl.textContent = "Save Topic";
-    overlay.hidden = false;
-    setTimeout(function(){ nameEl.focus(); }, 60);
-  }
-
-  function openEditModal(topicId) {
-    var t = _topics.find(function(x){ return x.topicId === topicId; });
-    if (!t) return;
-    _editMode = true; _editTopicId = topicId;
-    modalTitle.textContent = "Edit Topic";
-    nameEl.value = t.name; idEl.value = t.topicId;
-    descEl.value = t.desc; iconEl.value = t.icon || "list";
-    idEl._userEdited = true;
-    jsonEl.value = "Loading…";
-    errEl.classList.remove("visible");
-    submitEl.disabled = true; submitEl.textContent = "Save Topic";
-    overlay.hidden = false;
-
-    /* Fetch existing problems */
-    convexQuery("problems:listForTopic", { topicId: topicId }).then(function(days) {
-      /* days is [{name, problems:[{title,approach,target,link?}]}] */
-      jsonEl.value = JSON.stringify(days, null, 2);
-      submitEl.disabled = false;
-    }).catch(function() {
-      jsonEl.value = "";
-      submitEl.disabled = false;
-    });
-  }
-
-  function closeAddModal() {
-    overlay.hidden = true;
-  }
-
-  document.getElementById("openAddTopic").addEventListener("click", openAddModal);
-  document.getElementById("cancelModal").addEventListener("click", closeAddModal);
-  document.getElementById("closeModal").addEventListener("click", closeAddModal);
-  overlay.addEventListener("click", function(e){ if(e.target===overlay) closeAddModal(); });
-  document.addEventListener("keydown", function(e){
-    if (e.key === "Escape" && !overlay.hidden) closeAddModal();
-  });
-
-  /* Auto-generate ID from name (add mode only) */
-  nameEl.addEventListener("input", function() {
-    if (!_editMode && !idEl._userEdited) {
-      idEl.value = nameEl.value.toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9\-]/g,"");
-    }
-  });
-  idEl.addEventListener("input", function(){ idEl._userEdited = true; });
-
-  /* Copy template */
-  var copyBtn = document.getElementById("copyTemplate");
-  copyBtn.addEventListener("click", function() {
-    if (jsonEl.value.trim() === "") jsonEl.value = JSON_TEMPLATE;
-    navigator.clipboard.writeText(JSON_TEMPLATE).then(function() {
-      copyBtn.textContent = "Copied!"; copyBtn.classList.add("copied");
-      setTimeout(function(){ copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Copy template'; copyBtn.classList.remove("copied"); }, 2000);
-    }).catch(function(){
-      jsonEl.value = JSON_TEMPLATE; jsonEl.focus(); jsonEl.select();
-    });
-  });
-
-  function showErr(msg) { errEl.textContent = msg; errEl.classList.add("visible"); }
-
-  /* Submit */
-  submitEl.addEventListener("click", function() {
-    var name    = nameEl.value.trim();
-    var topicId = idEl.value.trim();
-    var desc    = descEl.value.trim();
-    var icon    = iconEl.value;
-    var raw     = jsonEl.value.trim();
-
-    errEl.classList.remove("visible");
-    if (!name || !topicId || !desc) { showErr("Name, ID and Description are all required."); return; }
-    if (!/^[a-z0-9\-]+$/.test(topicId)) { showErr("ID must be lowercase letters, numbers and hyphens only."); return; }
-    if (!raw || raw === "Loading…") { showErr("Paste the problem data JSON before saving."); return; }
-
-    var days;
-    try {
-      days = JSON.parse(raw);
-      if (!Array.isArray(days)) throw new Error("Must be a JSON array of day objects.");
-    } catch(e) { showErr("Invalid JSON: " + e.message); return; }
-
-    submitEl.disabled = true; submitEl.textContent = "Saving…";
-
-    /* Determine order */
-    var order = 0;
-    if (!_editMode) {
-      _topics.forEach(function(t){ if(t.order >= order) order = t.order + 1; });
-    } else {
-      var existing = _topics.find(function(t){ return t.topicId === _editTopicId; });
-      if (existing) order = existing.order;
-    }
-
-    convexMutation("topics:upsert", { topicId: topicId, name: name, desc: desc, icon: icon, ready: true, order: order })
-      .then(function() {
-        var flat = [];
-        days.forEach(function(d, di) {
-          (d.problems || []).forEach(function(p, pi) {
-            var prob = { dayName: d.name, dayOrder: di, problemOrder: pi, title: p.title || "Untitled", approach: p.approach || "", target: p.target || "" };
-            if (p.link) prob.link = p.link;
-            flat.push(prob);
+        /* Attach action button listeners */
+        listEl.querySelectorAll("[data-action]").forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.preventDefault(); e.stopPropagation();
+            var id = btn.getAttribute("data-id");
+            var action = btn.getAttribute("data-action");
+            if (action === "edit") openEditModal(id, btn);
+            if (action === "delete") openDeleteConfirm(id);
           });
         });
-        return convexMutation("problems:seedTopic", { topicId: topicId, problems: flat });
-      })
-      .then(function() {
-        clearCache();
-        return convexQuery("topics:list", {});
-      })
-      .then(function(topics) {
-        setCache(topics); renderTopics(topics); closeAddModal();
-      })
-      .catch(function(err) {
-        showErr("Save failed: " + (err.message || "Unknown error"));
+      }
+
+      /* Load */
+      var cached = getCache();
+      if (cached) renderTopics(cached);
+      convexQuery("topics:list", {}).then(function (topics) {
+        setCache(topics); renderTopics(topics);
+      }).catch(function () {
+        if (!cached) listEl.innerHTML = '<p class="topic-list-empty">Couldn\'t load topics — check your connection.</p>';
+      });
+
+      /* ================================================================
+       * ADD / EDIT MODAL  —  with radial clip-path reveal
+       * ================================================================ */
+      var overlay = document.getElementById("addTopicOverlay");
+      var modalTitle = document.getElementById("modalTitle");
+      var nameEl = document.getElementById("fieldName");
+      var idEl = document.getElementById("fieldId");
+      var descEl = document.getElementById("fieldDesc");
+      var iconEl = document.getElementById("fieldIcon");
+      var jsonEl = document.getElementById("fieldJson");
+      var errEl = document.getElementById("jsonError");
+      var submitEl = document.getElementById("submitModal");
+
+      var _editMode = false;
+      var _editTopicId = "";
+      var _closeTimer = null;
+
+      /* Set the radial origin (button centre) as CSS custom props on the overlay */
+      function setOrigin(el) {
+        var r = el ? el.getBoundingClientRect() : null;
+        var ox = r ? (r.left + r.width / 2) + 'px' : '50%';
+        var oy = r ? (r.top + r.height / 2) + 'px' : '50%';
+        overlay.style.setProperty('--ox', ox);
+        overlay.style.setProperty('--oy', oy);
+      }
+
+      var IS_MOBILE = function () { return window.innerWidth <= 600; };
+
+      function revealOverlay(triggerEl) {
+        clearTimeout(_closeTimer);
+        overlay.classList.remove('is-closing', 'is-open');
+        if (IS_MOBILE()) {
+          setOrigin(triggerEl);
+          overlay.removeAttribute('hidden');
+          /* double rAF: give browser one paint to register collapsed state */
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              overlay.classList.add('is-open');
+            });
+          });
+        } else {
+          /* Desktop: just show instantly */
+          overlay.removeAttribute('hidden');
+        }
+      }
+
+      function hideOverlay() {
+        if (IS_MOBILE()) {
+          overlay.classList.remove('is-open');
+          overlay.classList.add('is-closing');
+          _closeTimer = setTimeout(function () {
+            overlay.setAttribute('hidden', '');
+            overlay.classList.remove('is-closing');
+          }, 300);
+        } else {
+          overlay.setAttribute('hidden', '');
+        }
+      }
+
+      function openAddModal(triggerEl) {
+        _editMode = false; _editTopicId = "";
+        modalTitle.textContent = "Add New Topic";
+        nameEl.value = ""; idEl.value = ""; descEl.value = "";
+        iconEl.value = "list"; jsonEl.value = "";
+        idEl._userEdited = false;
+        errEl.classList.remove("visible");
         submitEl.disabled = false; submitEl.textContent = "Save Topic";
+        revealOverlay(triggerEl);
+        setTimeout(function () { nameEl.focus(); }, 120);
+      }
+
+      function openEditModal(topicId, triggerEl) {
+        var t = _topics.find(function (x) { return x.topicId === topicId; });
+        if (!t) return;
+        _editMode = true; _editTopicId = topicId;
+        modalTitle.textContent = "Edit Topic";
+        nameEl.value = t.name; idEl.value = t.topicId;
+        descEl.value = t.desc; iconEl.value = t.icon || "list";
+        idEl._userEdited = true;
+        jsonEl.value = "Loading…";
+        errEl.classList.remove("visible");
+        submitEl.disabled = true; submitEl.textContent = "Save Topic";
+        revealOverlay(triggerEl);
+
+        /* Fetch existing problems */
+        convexQuery("problems:listForTopic", { topicId: topicId }).then(function (days) {
+          jsonEl.value = JSON.stringify(days, null, 2);
+          submitEl.disabled = false;
+        }).catch(function () {
+          jsonEl.value = "";
+          submitEl.disabled = false;
+        });
+      }
+
+      function closeAddModal() { hideOverlay(); }
+
+      document.getElementById("openAddTopic").addEventListener("click", function (e) {
+        openAddModal(e.currentTarget);
       });
-  });
+      document.getElementById("cancelModal").addEventListener("click", closeAddModal);
+      document.getElementById("cancelModalMobile").addEventListener("click", closeAddModal);
+      document.getElementById("closeModal").addEventListener("click", closeAddModal);
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) closeAddModal(); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !overlay.hasAttribute('hidden')) closeAddModal();
+      });
 
-  /* ================================================================
-   * DELETE CONFIRM MODAL
-   * ================================================================ */
-  var deleteOverlay  = document.getElementById("deleteOverlay");
-  var confirmNameEl  = document.getElementById("confirmName");
-  var confirmDelBtn  = document.getElementById("confirmDelete");
-  var _deleteTopicId = "";
+      /* Mobile submit mirrors desktop submitEl */
+      document.getElementById("submitModalMobile").addEventListener("click", function () {
+        submitEl.click();
+      });
+      /* Keep mobile button disabled state in sync */
+      var _origDisabled = Object.getOwnPropertyDescriptor(HTMLButtonElement.prototype, 'disabled');
+      var mobileSubmitEl = document.getElementById("submitModalMobile");
+      var _syncMobileBtn = function () {
+        mobileSubmitEl.disabled = submitEl.disabled;
+        mobileSubmitEl.textContent = submitEl.textContent;
+      };
+      /* Poll sync every 300ms when overlay open (lightweight) */
+      setInterval(function () {
+        if (!overlay.hasAttribute('hidden')) _syncMobileBtn();
+      }, 300);
 
-  function openDeleteConfirm(topicId) {
-    var t = _topics.find(function(x){ return x.topicId === topicId; });
-    _deleteTopicId = topicId;
-    confirmNameEl.textContent = t ? t.name : topicId;
-    confirmDelBtn.disabled = false; confirmDelBtn.textContent = "Delete";
-    deleteOverlay.hidden = false;
-  }
-  function closeDeleteConfirm() { deleteOverlay.hidden = true; _deleteTopicId = ""; }
+      /* Auto-generate ID from name (add mode only) */
+      nameEl.addEventListener("input", function () {
+        if (!_editMode && !idEl._userEdited) {
+          idEl.value = nameEl.value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
+        }
+      });
+      idEl.addEventListener("input", function () { idEl._userEdited = true; });
 
-  document.getElementById("cancelConfirm").addEventListener("click", closeDeleteConfirm);
-  document.getElementById("closeConfirm").addEventListener("click", closeDeleteConfirm);
-  deleteOverlay.addEventListener("click", function(e){ if(e.target===deleteOverlay) closeDeleteConfirm(); });
-  document.addEventListener("keydown", function(e){
-    if (e.key === "Escape" && !deleteOverlay.hidden) closeDeleteConfirm();
-  });
+      /* Copy template */
+      var copyBtn = document.getElementById("copyTemplate");
+      copyBtn.addEventListener("click", function () {
+        if (jsonEl.value.trim() === "") jsonEl.value = JSON_TEMPLATE;
+        navigator.clipboard.writeText(JSON_TEMPLATE).then(function () {
+          copyBtn.textContent = "Copied!"; copyBtn.classList.add("copied");
+          setTimeout(function () { copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Copy template'; copyBtn.classList.remove("copied"); }, 2000);
+        }).catch(function () {
+          jsonEl.value = JSON_TEMPLATE; jsonEl.focus(); jsonEl.select();
+        });
+      });
 
-  confirmDelBtn.addEventListener("click", function() {
-    if (!_deleteTopicId) return;
-    confirmDelBtn.disabled = true; confirmDelBtn.textContent = "Deleting…";
-    convexMutation("topics:deleteTopic", { topicId: _deleteTopicId })
-      .then(function() {
-        clearCache();
-        return convexQuery("topics:list", {});
-      })
-      .then(function(topics) {
-        setCache(topics); renderTopics(topics); closeDeleteConfirm();
-      })
-      .catch(function(err) {
-        alert("Delete failed: " + (err.message || "Unknown error"));
+      function showErr(msg) { errEl.textContent = msg; errEl.classList.add("visible"); }
+
+      /* Submit */
+      submitEl.addEventListener("click", function () {
+        var name = nameEl.value.trim();
+        var topicId = idEl.value.trim();
+        var desc = descEl.value.trim();
+        var icon = iconEl.value;
+        var raw = jsonEl.value.trim();
+
+        errEl.classList.remove("visible");
+        if (!name || !topicId || !desc) { showErr("Name, ID and Description are all required."); return; }
+        if (!/^[a-z0-9\-]+$/.test(topicId)) { showErr("ID must be lowercase letters, numbers and hyphens only."); return; }
+        if (!raw || raw === "Loading…") { showErr("Paste the problem data JSON before saving."); return; }
+
+        var days;
+        try {
+          days = JSON.parse(raw);
+          if (!Array.isArray(days)) throw new Error("Must be a JSON array of day objects.");
+        } catch (e) { showErr("Invalid JSON: " + e.message); return; }
+
+        submitEl.disabled = true; submitEl.textContent = "Saving…";
+
+        /* Determine order */
+        var order = 0;
+        if (!_editMode) {
+          _topics.forEach(function (t) { if (t.order >= order) order = t.order + 1; });
+        } else {
+          var existing = _topics.find(function (t) { return t.topicId === _editTopicId; });
+          if (existing) order = existing.order;
+        }
+
+        convexMutation("topics:upsert", { topicId: topicId, name: name, desc: desc, icon: icon, ready: true, order: order })
+          .then(function () {
+            var flat = [];
+            days.forEach(function (d, di) {
+              (d.problems || []).forEach(function (p, pi) {
+                var prob = { dayName: d.name, dayOrder: di, problemOrder: pi, title: p.title || "Untitled", approach: p.approach || "", target: p.target || "" };
+                if (p.link) prob.link = p.link;
+                flat.push(prob);
+              });
+            });
+            return convexMutation("problems:seedTopic", { topicId: topicId, problems: flat });
+          })
+          .then(function () {
+            clearCache();
+            return convexQuery("topics:list", {});
+          })
+          .then(function (topics) {
+            setCache(topics); renderTopics(topics); closeAddModal();
+          })
+          .catch(function (err) {
+            showErr("Save failed: " + (err.message || "Unknown error"));
+            submitEl.disabled = false; submitEl.textContent = "Save Topic";
+          });
+      });
+
+      /* ================================================================
+       * DELETE CONFIRM MODAL
+       * ================================================================ */
+      var deleteOverlay = document.getElementById("deleteOverlay");
+      var confirmNameEl = document.getElementById("confirmName");
+      var confirmDelBtn = document.getElementById("confirmDelete");
+      var _deleteTopicId = "";
+
+      function openDeleteConfirm(topicId) {
+        var t = _topics.find(function (x) { return x.topicId === topicId; });
+        _deleteTopicId = topicId;
+        confirmNameEl.textContent = t ? t.name : topicId;
         confirmDelBtn.disabled = false; confirmDelBtn.textContent = "Delete";
-      });
-  });
+        deleteOverlay.hidden = false;
+      }
+      function closeDeleteConfirm() { deleteOverlay.hidden = true; _deleteTopicId = ""; }
 
-})();
-</script>
+      document.getElementById("cancelConfirm").addEventListener("click", closeDeleteConfirm);
+      document.getElementById("closeConfirm").addEventListener("click", closeDeleteConfirm);
+      deleteOverlay.addEventListener("click", function (e) { if (e.target === deleteOverlay) closeDeleteConfirm(); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !deleteOverlay.hidden) closeDeleteConfirm();
+      });
+
+      confirmDelBtn.addEventListener("click", function () {
+        if (!_deleteTopicId) return;
+        confirmDelBtn.disabled = true; confirmDelBtn.textContent = "Deleting…";
+        convexMutation("topics:deleteTopic", { topicId: _deleteTopicId })
+          .then(function () {
+            clearCache();
+            return convexQuery("topics:list", {});
+          })
+          .then(function (topics) {
+            setCache(topics); renderTopics(topics); closeDeleteConfirm();
+          })
+          .catch(function (err) {
+            alert("Delete failed: " + (err.message || "Unknown error"));
+            confirmDelBtn.disabled = false; confirmDelBtn.textContent = "Delete";
+          });
+      });
+
+    })();
+  </script>
 </body>
+
 </html>
