@@ -317,7 +317,10 @@ class MarkdownEditor extends HTMLElement {
     if (this.isEditing) {
       this.textarea.classList.add('editing');
       this.preview.classList.remove('visible');
-      setTimeout(() => { this.textarea.focus(); }, 50);
+      setTimeout(() => { 
+        this.adjustHeight();
+        this.textarea.focus(); 
+      }, 50);
     } else {
       this.textarea.classList.remove('editing');
       this.preview.classList.add('visible');
