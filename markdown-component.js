@@ -355,7 +355,7 @@ class MarkdownEditor extends HTMLElement {
       }
 
       const _p = "?k" + "ey=";
-      fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent" + _p + _cfgData, {
+      fetch("https://generativelanguage.googleapis.com/v1beta/models/models/gemini-2.5-flash-lite:generateContent" + _p + _cfgData, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
