@@ -1524,6 +1524,13 @@
       var dayIndex = 0;
       var allProblems = [];
 
+      var soundComplete = new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.1/sounds/water_droplet.mp3");
+      var soundPractice = new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.1/sounds/glass.mp3");
+      var soundRemove = new Audio("https://cdnjs.cloudflare.com/ajax/libs/ion-sound/3.0.1/sounds/button_tiny.mp3");
+      soundComplete.volume = 0.5;
+      soundPractice.volume = 0.5;
+      soundRemove.volume = 0.5;
+
       var CACHE_TTL = 5 * 60 * 1000;
       var _cacheKey = "dsa-cache-" + topicId;
 
@@ -2138,7 +2145,10 @@
       /* ── Toggle + modals ─────────────────────────────────── */
       function toggleProblem(p) {
         if (state.completed.has(p.id)) openConfirm(p);
-        else { state.completed.add(p.id); saveCompleted(); renderList(); renderProgress(); }
+        else { 
+          soundComplete.currentTime = 0; soundComplete.play().catch(function(){});
+          state.completed.add(p.id); saveCompleted(); renderList(); renderProgress(); 
+        }
       }
       function openConfirm(p) {
         state.pending = p;
@@ -2150,6 +2160,7 @@
       function confirmRemove() {
         var p = state.pending;
         if (!p) { closeConfirm(); return; }
+        soundRemove.currentTime = 0; soundRemove.play().catch(function(){});
         state.completed.delete(p.id); closeConfirm(); saveCompleted(); renderList(); renderProgress();
       }
       function openPracticeConfirm(p) {
@@ -2163,6 +2174,7 @@
       function confirmPractice() {
         var p = state.practicePending;
         if (!p) { closePracticeConfirm(); return; }
+        soundPractice.currentTime = 0; soundPractice.play().catch(function(){});
         state.practiceCounts[p.id] = (state.practiceCounts[p.id] || 0) + 1;
         closePracticeConfirm(); savePracticeCounts(); renderList();
         showToast("Practice #" + state.practiceCounts[p.id] + " logged for \"" + p.title + "\"! 🎯");

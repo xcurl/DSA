@@ -124,89 +124,63 @@ class MarkdownEditor extends HTMLElement {
             width: auto !important;
             margin-left: -28px !important;
             margin-right: -28px !important;
-            padding-left: 40px !important;
             padding-right: 40px !important;
           }
-        }@keyframes ai-border-spin {
-          from { transform: translate(-50%, -50%) rotate(0deg); }
-          to { transform: translate(-50%, -50%) rotate(360deg); }
         }
+
         .ai-box {
           display: none;
-          position: absolute;
-          inset: 0;
+          position: relative;
           z-index: 10;
           border-radius: 10px;
           overflow: hidden;
-          padding: 2px; /* Border thickness */
-          background: #222; /* Base border color when gradient isn't over it */
-        }
-        .ai-box::before {
-          content: "";
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 4000px;
-          height: 4000px;
-          background: conic-gradient(from 0deg, transparent 0%, transparent 80%, #8ab4f8 95%, #ffffff 100%);
-          transform: translate(-50%, -50%) rotate(0deg);
-          animation: ai-border-spin 4s linear infinite;
-          will-change: transform;
-          display: none;
-        }
-        .ai-box.is-loading::before {
-          display: block;
+          background: #000000; /* Completely hides the original text beneath */
         }
         .ai-box-inner {
           position: relative;
           z-index: 1;
           width: 100%;
-          height: 100%;
-          background: rgba(10, 10, 10, 0.95);
-          backdrop-filter: blur(8px);
           border-radius: 8px;
-          padding: 36px 14px 14px 14px;
+          padding: 10px 14px;
           box-sizing: border-box;
           overflow: auto;
+          background: transparent;
         }
-        .ai-dots {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          margin-top: 10px;
+        .ai-box.is-loading .ai-content {
+          -webkit-mask-image: linear-gradient(90deg, #fff 0%, #fff 40%, rgba(255,255,255,0.15) 50%, #fff 60%, #fff 100%);
+          -webkit-mask-size: 200% 100%;
+          animation: ai-text-sweep 1.5s infinite linear, ai-text-colors 2.5s infinite linear !important;
         }
-        .ai-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          animation: ai-dissolve 1.5s infinite alternate ease-in-out;
+        .ai-box.is-loading .ai-content * {
+          animation: ai-text-colors 2.5s infinite linear !important;
         }
-        .ai-dot:nth-child(1) { background: #4285f4; animation-delay: 0s; }
-        .ai-dot:nth-child(2) { background: #ea4335; animation-delay: 0.5s; }
-        .ai-dot:nth-child(3) { background: #fbbc05; animation-delay: 1.0s; }
-        @keyframes ai-dissolve {
-          0% { opacity: 0.2; transform: scale(0.8); }
-          100% { opacity: 1; transform: scale(1.2); }
+        @keyframes ai-text-sweep {
+          0% { -webkit-mask-position: 200% 0; }
+          100% { -webkit-mask-position: -200% 0; }
         }
-
+        @keyframes ai-text-colors {
+          0% { color: #8ab4f8; }
+          33% { color: #4caf50; }
+          66% { color: #f6e05e; }
+          100% { color: #8ab4f8; }
+        }
+        
+        /* Hide original text elements while AI overlay is active */
+        .notes-md-wrap.ai-active > .notes-textarea,
+        .notes-md-wrap.ai-active > .notes-md-render {
+          display: none !important;
+        }
       </style>
       <div class="notes-md-wrap">
         <div class="notes-md-render"></div>
         <textarea class="notes-textarea" placeholder="Your notes… (Markdown supported · Ctrl+Enter to save)"></textarea>
         <div class="ai-box">
           <div class="ai-box-inner">
-            <div class="ai-actions" style="position:absolute; top:6px; right:6px; display:flex; gap:6px;">
+            <div class="ai-actions" style="position:absolute; top:6px; right:6px; display:flex; gap:6px; z-index:10;">
               <button class="ai-btn ai-accept" style="background:#4caf50; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:600; font-size:11px; cursor:pointer;">Accept</button>
               <button class="ai-btn ai-reject" style="background:rgba(255,255,255,0.1); color:#fff; border:none; padding:4px 10px; border-radius:6px; font-weight:600; font-size:11px; cursor:pointer;">Reject</button>
             </div>
             <div class="ai-content notes-md-render" style="display:block; position:relative; opacity:1; visibility:visible; min-height:0; padding:0; border:none; background:transparent; pointer-events:auto;"></div>
-            <div class="ai-loading" style="display:none;">
-              <div class="ai-dots">
-                <div class="ai-dot"></div>
-                <div class="ai-dot"></div>
-                <div class="ai-dot"></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -240,17 +214,32 @@ class MarkdownEditor extends HTMLElement {
         } else {
           this.textarea.value = this._currentRephrased;
         }
+        
+        // Remove the AI overlay and unhide the original textarea FIRST so its height can be correctly calculated
+        this.shadowRoot.querySelector('.ai-box').style.display = 'none';
+        this.shadowRoot.querySelector('.notes-md-wrap').classList.remove('ai-active');
+
         this._emit();
         this.updatePreview();
         this.adjustHeight();
+      } else {
+        this.shadowRoot.querySelector('.ai-box').style.display = 'none';
+        this.shadowRoot.querySelector('.notes-md-wrap').classList.remove('ai-active');
       }
-      this.shadowRoot.querySelector('.ai-box').style.display = 'none';
       this.textarea.focus();
     });
 
     this.shadowRoot.querySelector('.ai-reject').addEventListener('click', () => {
       this.shadowRoot.querySelector('.ai-box').style.display = 'none';
+      this.shadowRoot.querySelector('.notes-md-wrap').classList.remove('ai-active');
       this.textarea.focus();
+    });
+
+    // Allow clicking the empty state preview box to enter edit mode
+    this.preview.addEventListener('click', () => {
+      if (!this.textarea.value.trim() && !this.isEditing) {
+        this.setEditMode(true);
+      }
     });
 
     this.textarea.addEventListener('input', () => {
@@ -328,13 +317,12 @@ class MarkdownEditor extends HTMLElement {
       
       const aiBox = this.shadowRoot.querySelector('.ai-box');
       const aiContent = this.shadowRoot.querySelector('.ai-content');
-      const aiLoading = this.shadowRoot.querySelector('.ai-loading');
       const aiActions = this.shadowRoot.querySelector('.ai-actions');
       
+      this.shadowRoot.querySelector('.notes-md-wrap').classList.add('ai-active');
       aiBox.style.display = 'block';
       aiBox.classList.add('is-loading');
-      aiContent.innerHTML = '';
-      aiLoading.style.display = 'block';
+      aiContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(textToRephrase) : textToRephrase;
       aiActions.style.display = 'none';
 
       let _cfgData = '';
@@ -368,6 +356,10 @@ class MarkdownEditor extends HTMLElement {
           }]
         })
       }).then(res => res.json()).then(data => {
+        const aiBox = this.shadowRoot.querySelector('.ai-box');
+        const aiContent = this.shadowRoot.querySelector('.ai-content');
+        const aiActions = this.shadowRoot.querySelector('.ai-actions');
+
         aiBox.classList.remove('is-loading');
         if (data.error) {
           throw new Error(data.error.message || "API Error");
@@ -375,17 +367,20 @@ class MarkdownEditor extends HTMLElement {
         let rephrasedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Error rephrasing.";
         rephrasedText = rephrasedText.replace(/^```(?:markdown)?\n/i, "").replace(/\n```$/i, "").trim();
         
-        aiLoading.style.display = 'none';
         aiContent.innerHTML = typeof marked !== 'undefined' ? marked.parse(rephrasedText) : rephrasedText;
         aiActions.style.display = 'flex';
         
         this._currentRephrased = rephrasedText;
         this._currentSelection = isSelection ? { start, end } : null;
       }).catch(e => {
+        const aiBox = this.shadowRoot.querySelector('.ai-box');
+        const aiContent = this.shadowRoot.querySelector('.ai-content');
+        const aiActions = this.shadowRoot.querySelector('.ai-actions');
+
         aiBox.classList.remove('is-loading');
-        aiLoading.style.display = 'none';
         aiContent.innerHTML = "Error: " + e.message;
         aiActions.style.display = 'flex';
+        console.error("AI Rephrase Error: ", e);
       });
       return;
     }
@@ -505,6 +500,12 @@ class MarkdownEditor extends HTMLElement {
       this.textarea.blur();
       this.textarea.classList.remove('editing');
       this.preview.classList.add('visible');
+      
+      const aiBox = this.shadowRoot.querySelector('.ai-box');
+      if (aiBox) aiBox.style.display = 'none';
+      const notesWrap = this.shadowRoot.querySelector('.notes-md-wrap');
+      if (notesWrap) notesWrap.classList.remove('ai-active');
+
       this.updatePreview();
     }
     this.dispatchEvent(new CustomEvent('mode-change', {
@@ -520,7 +521,7 @@ class MarkdownEditor extends HTMLElement {
 
   adjustHeight() {
     this.textarea.style.height = 'auto';
-    this.textarea.style.height = (this.textarea.scrollHeight) + 'px';
+    this.textarea.style.height = (this.textarea.scrollHeight + 2) + 'px'; // +2 to account for top/bottom borders and prevent scrolling
   }
 
   _applyFontSize() {
@@ -537,8 +538,10 @@ class MarkdownEditor extends HTMLElement {
     } else if (val.trim()) {
       // marked not loaded yet — show plain text
       this.preview.textContent = val;
+      this.preview.style.cursor = 'auto';
     } else {
-      this.preview.innerHTML = '<span style="color:#6a6a6a; font-style:italic;">No notes yet. Click the edit icon to add notes.</span>';
+      this.preview.innerHTML = '<span style="color:#6a6a6a; font-style:italic;">No notes yet. Click here or the edit icon to add notes.</span>';
+      this.preview.style.cursor = 'pointer';
     }
   }
 
