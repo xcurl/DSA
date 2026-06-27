@@ -1950,7 +1950,6 @@
             '<span class="cell-target">' + esc(p.target) + '</span>' +
             '<span class="cell-note">' +
             '<button class="practice-btn" type="button" title="Log a practice session (×' + practiceCount + ')" aria-label="Log practice">' + (practiceCount > 0 ? '×' + practiceCount : '×0') + '</button>' +
-            '<button class="notes-btn' + (hasNote ? " has-note" : "") + '" type="button" title="' + (hasNote ? "Edit note" : "Add note") + '" aria-expanded="false" aria-controls="' + panelId + '">' + NOTE_SVG + '</button>' +
             '</span>' +
             '</div>' +
             '<span class="cell-approach">' + esc(p.approach) + '</span>' +
@@ -2000,24 +1999,32 @@
             '<div class="notes-saved"></div>' +
             '</div>';
 
-          /* toggle completion */
+          /* Click behavior: cell-status toggles completion, rest of row toggles notes */
           row.addEventListener("click", function (e) {
-            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel") || e.target.closest(".practice-btn") || e.target.closest(".link-btn")) return;
-            toggleProblem(p);
+            if (e.target.closest(".notes-panel") || e.target.closest(".practice-btn") || e.target.closest(".link-btn")) return;
+            
+            if (e.target.closest(".cell-status")) {
+              toggleProblem(p);
+            } else {
+              if (panel.classList.contains("is-open")) closeNotesPanel();
+              else openNotesPanel();
+            }
           });
           row.addEventListener("keydown", function (e) {
-            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel") || e.target.closest(".practice-btn")) return;
-            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleProblem(p); }
-          });
-          row.addEventListener("dblclick", function (e) {
-            if (e.target.closest(".notes-btn") || e.target.closest(".notes-panel") || e.target.closest(".practice-btn") || e.target.closest(".link-btn")) return;
-            e.preventDefault(); openNotesPanel();
+            if (e.target.closest(".notes-panel") || e.target.closest(".practice-btn")) return;
+            if (e.key === "Enter" || e.key === " ") { 
+              e.preventDefault(); 
+              if (e.target.closest(".cell-status")) toggleProblem(p);
+              else {
+                if (panel.classList.contains("is-open")) closeNotesPanel();
+                else openNotesPanel();
+              }
+            }
           });
 
           var practiceBtn = row.querySelector(".practice-btn");
           practiceBtn.addEventListener("click", function (e) { e.stopPropagation(); openPracticeConfirm(p); });
 
-          var btn = row.querySelector(".notes-btn");
           var panel = row.querySelector(".notes-panel");
           var ta = row.querySelector("markdown-editor");
           var savedEl = row.querySelector(".notes-saved");
@@ -2040,8 +2047,7 @@
 
           function refreshNoteBadge() {
             var filled = (state.notes[p.id] || "").trim().length > 0 || codePane.hasContent();
-            btn.classList.toggle("has-note", filled);
-            btn.title = filled ? "Edit note" : "Add note";
+            row.classList.toggle("has-note", filled);
           }
           function flashSaved() {
             if (editBtn) {
@@ -2057,25 +2063,18 @@
             document.querySelectorAll('.notes-panel.is-open').forEach(function (p) {
               if (p !== panel) {
                 p.classList.remove('is-open');
-                var prevBtn = document.querySelector('.notes-btn[aria-controls="' + p.id + '"]');
-                if (prevBtn) prevBtn.setAttribute('aria-expanded', 'false');
+                p.parentElement.setAttribute('aria-expanded', 'false');
               }
             });
 
-            if (!panel.classList.contains("is-open")) { panel.classList.add("is-open"); btn.setAttribute("aria-expanded", "true"); }
+            if (!panel.classList.contains("is-open")) { panel.classList.add("is-open"); row.setAttribute("aria-expanded", "true"); }
             setTimeout(function () { ta.focusEditor(); }, 400); // wait for transition
           }
           function closeNotesPanel() {
-            if (panel.classList.contains("is-open")) { panel.classList.remove("is-open"); btn.setAttribute("aria-expanded", "false"); }
+            if (panel.classList.contains("is-open")) { panel.classList.remove("is-open"); row.setAttribute("aria-expanded", "false"); }
           }
 
           var codePane = setupCodePane(p.id, codeMount, function () { refreshNoteBadge(); flashSaved(); }, tabAddBtn);
-
-          btn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            if (panel.classList.contains("is-open")) closeNotesPanel();
-            else openNotesPanel();
-          });
 
           tabs.forEach(function (tab) {
             tab.addEventListener("click", function (e) {
@@ -2124,11 +2123,8 @@
 
           document.addEventListener("mousedown", function (e) {
             if (!panel.classList.contains("is-open")) return;
-            // Click inside the panel or on its toggle button → do nothing
-            if (panel.contains(e.target) || e.target === btn || btn.contains(e.target)) return;
-            // If click is on ANY other notes toggle button → don't close here,
-            // let the click handler of that button handle it smoothly to prevent layout shifts.
-            if (e.target.closest(".notes-btn")) return;
+            // Click inside the panel or on its own row → do nothing (let row click handle it)
+            if (panel.contains(e.target) || e.target.closest('.row') === row) return;
             // In markdown EDIT mode → just save (switch to view), keep panel open
             if (ta && ta.isEditing) return;
             // If code editor textarea is focused → keep panel open (same as edit mode)
